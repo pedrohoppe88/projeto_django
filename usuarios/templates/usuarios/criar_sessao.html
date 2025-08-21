@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Criar Nova Sessão</title>
+</head>
+<body>
+    <h2>Criar Nova Sessão</h2>
+    <form method="post">
+        {% csrf_token %}
+        <label>Nome da Sessão:</label>
+        <input type="text" name="nome" required><br><br>
+
+        <label>Senha da Sessão:</label>
+        <input type="password" name="senha" required><br><br>
+
+        <button type="submit">Criar Sessão</button>
+    </form>
+    {% if messages %}
+        <ul>
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</body>
+</html>

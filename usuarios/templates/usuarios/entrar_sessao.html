@@ -1,0 +1,6 @@
+<h2>Entrar na Sessão: {{ sessao.nome }}</h2>
+<form method="post">
+  {% csrf_token %}
+  <input type="password" name="senha" placeholder="Digite a senha">
+  <button type="submit">Entrar</button>
+</form>

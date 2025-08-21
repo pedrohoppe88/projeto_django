@@ -1,0 +1,10 @@
+<h2>Sessão: {{ sessao.nome }}</h2>
+<ul>
+  {% for item in itens %}
+    <li>{{ item.nome }} - {{ item.quantidade }}
+        <a href="{% url 'excluir_item' item.id %}">Excluir</a>
+    </li>
+  {% endfor %}
+</ul>
+
+<a href="{% url 'adicionar_item' sessao.id %}">Adicionar Item</a>
