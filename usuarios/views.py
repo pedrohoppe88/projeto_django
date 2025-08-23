@@ -7,6 +7,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from .models import Sessao, Item
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
 
 def cadastrar_usuario(request):
     if request.method == 'POST':
@@ -21,7 +22,11 @@ def cadastrar_usuario(request):
     return render(request, 'usuarios/cadastrar.html', {'form': form})
 
 def sucesso(request):
-    return render(request, 'usuarios/sucesso.html')
+    usuario_id = request.session.get('usuario_id')
+    usuario = Usuario.objects.get(id=usuario_id) if usuario_id else None
+    nome = usuario.nome if usuario else None
+    graduacao = usuario.graduacao if usuario else None
+    return render(request, 'usuarios/sucesso.html', {'usuario_id': usuario_id, 'graduacao': graduacao, 'nome': nome})
 
 def login_usuario(request):
     if request.method == 'POST':
@@ -126,6 +131,7 @@ def excluir_item(request, item_id):
     item.delete()
     return redirect("detalhes_sessao", sessao_id=sessao.id)
 
+@login_required
 def criar_sessao(request):
     if request.method == "POST":
         nome = request.POST.get("nome")
@@ -139,3 +145,7 @@ def criar_sessao(request):
             return redirect("listar_sessoes")
 
     return render(request, "usuarios/criar_sessao.html")
+
+def mostrar_sessao(request):
+    usuario_id = request.session.get('usuario_id')
+    return HttpResponse(f"Usuário logado (usuario_id): {usuario_id}")

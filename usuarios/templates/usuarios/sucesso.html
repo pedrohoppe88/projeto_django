@@ -3,8 +3,39 @@
 <head>
     <title>Sucesso</title>
 </head>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 20px;
+        text-align: center;
+    }
+    h1 {
+        color: #4CAF50;
+    }
+    a {
+        display: inline-block;
+        margin-top: 20px;
+        padding: 10px 15px;
+        background-color: #4CAF50;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+    }
+    a:hover {
+        background-color: #45a049;
+    }
+
+</style>
+
 <body>
     <h1>Cadastro realizado com sucesso!</h1>
+    <h2>Bem-vindo, {{ usuario_id  }}!</h2>
+    <h2>Bem-vindo, {{ nome }}!</h2>
+    <h2>Bem-vindo, {{ graduacao }}!</h2>
     <a href="{% url 'cadastrar_usuario' %}">Cadastrar outro usuário</a>
+    
 </body>
 </html>
