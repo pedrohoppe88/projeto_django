@@ -55,13 +55,26 @@ def logout_usuario(request):
 def listar_usuarios(request):
     if 'usuario_id' not in request.session:
         return redirect('login')  # protege a página
-    usuarios = Usuario.objects.all()  # pega todos os usuários
-    return render(request, 'usuarios/all_users.html', {'usuarios': usuarios})
-
-def all_users(request):
     usuarios = Usuario.objects.all()
     return render(request, 'usuarios/all_users.html', {'usuarios': usuarios})
 
+def all_users(request):
+    if 'usuario_id' not in request.session:
+        return redirect('login')
+    usuarios = Usuario.objects.all()
+    usuario_id = request.session.get('usuario_id')
+    user = Usuario.objects.get(id=usuario_id) if usuario_id else None
+    nome = user.nome if user else None
+    graduacao = user.graduacao if user else None
+    quant_id = Usuario.objects.count()
+    return render(request, 'usuarios/all_users.html', {
+        'usuarios': usuarios,
+        'id_usuario': usuario_id,
+        'nome': nome,
+        'graduacao': graduacao,
+        'quantidade': quant_id
+    })
+    
 def dashboard(request):
     if 'usuario_id' not in request.session:
         return redirect('login')  # protege a página

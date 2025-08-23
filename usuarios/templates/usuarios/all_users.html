@@ -1,68 +1,133 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard de Usuários</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        .user-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-        }
-        
-        .stats-card {
-            transition: all 0.3s ease;
-        }
-        
-        .stats-card:hover {
-            transform: scale(1.03);
-        }
-        
-        @media (max-width: 768px) {
-            .responsive-table {
-                display: block;
-                overflow-x: auto;
-            }
-        }
-        
-        .scrollbar-hide::-webkit-scrollbar {
-            display: none;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard de Usuários</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .user-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+    .stats-card {
+      transition: all 0.3s ease;
+    }
+    .stats-card:hover {
+      transform: scale(1.03);
+    }
+    @media (max-width: 768px) {
+      .responsive-table {
+        display: block;
+        overflow-x: auto;
+      }
+    }
+    .scrollbar-hide::-webkit-scrollbar {
+      display: none;
+    }
+  </style>
 </head>
-<tbody class="bg-white divide-y divide-gray-200">
-    {% for usuario in usuarios %}
-    <tr class="hover:bg-gray-50 transition duration-150">
-        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ usuario.id|stringformat:"03d" }}</td>
-        <td class="px-6 py-4 whitespace-nowrap">
-            <div class="flex items-center">
-                <div class="flex-shrink-0 h-10 w-10">
-                    <img src="{{ usuario.foto_url|default:'https://via.placeholder.com/40' }}" alt="Foto de perfil" class="h-10 w-10 rounded-full border border-gray-200">
-                </div>
-                <div class="ml-4">
+<body class="bg-gray-100 min-h-screen">
+
+  <!-- Header -->
+  <header class="bg-white shadow-md">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+      <h1 class="text-2xl font-bold text-gray-800">Dashboard de Usuários</h1>
+      <a href="{% url 'logout' %}" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium shadow">
+        Sair
+      </a>
+      <p>Bem-vindo, {{graduacao}} {{ nome }}!</p>
+    </div>
+  </header>
+
+  <!-- Estatísticas -->
+  <section class="max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="stats-card bg-white p-6 rounded-xl shadow-md">
+      <h2 class="text-sm text-gray-500">Usuários Ativos</h2>
+      <p class="text-2xl font-bold text-green-600"></p>
+    </div>
+    <div class="stats-card bg-white p-6 rounded-xl shadow-md">
+      <h2 class="text-sm text-gray-500">Usuários Inativos</h2>
+      <p class="text-2xl font-bold text-red-600">{{ total_inativos }}</p>
+    </div>
+    <div class="stats-card bg-white p-6 rounded-xl shadow-md">
+      <h2 class="text-sm text-gray-500">Total de Usuários</h2>
+      <p class="text-2xl font-bold text-blue-600">{{ quantidade }}</p>
+    </div>
+  </section>
+
+  <!-- Tabela -->
+  <section class="max-w-7xl mx-auto px-6 pb-10">
+    <div class="bg-white shadow-md rounded-xl overflow-hidden">
+      <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+        <h2 class="text-lg font-semibold text-gray-800">Lista de Usuários</h2>
+        <a href="{% url 'cadastrar_usuario' %}" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium shadow">
+          + Adicionar Usuário
+        </a>
+      </div>
+      <div class="responsive-table scrollbar-hide">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Usuário</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Graduação</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+              <th class="px-6 py-3"></th>
+            </tr>
+          </thead>
+
+          <tbody class="bg-white divide-y divide-gray-200">
+            {% for usuario in usuarios %}
+            <tr class="hover:bg-gray-50 transition duration-150">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                {{ usuario.id|stringformat:"03d" }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex items-center">
+                  <div class="flex-shrink-0 h-10 w-10">
+                    <img src="{{ usuario.foto_url|default:'https://via.placeholder.com/40' }}" 
+                         alt="Foto de perfil" 
+                         class="h-10 w-10 rounded-full border border-gray-200">
+                  </div>
+                  <div class="ml-4">
                     <div class="text-sm font-medium text-gray-900">{{ usuario.nome }}</div>
                     <div class="text-sm text-gray-500">{{ usuario.criado_em|date:"d/m/Y" }}</div>
+                  </div>
                 </div>
-            </div>
-        </td>
-        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ usuario.email }}</td>
-        <td class="px-6 py-4 whitespace-nowrap">
-            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                {% if usuario.graduacao == 'Iniciante' %}bg-blue-100 text-blue-800{% elif usuario.graduacao == 'Intermediário' %}bg-yellow-100 text-yellow-800{% elif usuario.graduacao == 'Avançado' %}bg-green-100 text-green-800{% else %}bg-purple-100 text-purple-800{% endif %}">
-                {{ usuario.graduacao }}
-            </span>
-        </td>
-        <td class="px-6 py-4 whitespace-nowrap">
-            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                {% if usuario.status == 'ativo' %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
-                {{ usuario.status|title }}
-            </span>
-        </td>
-        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-        </td>
-    </tr>
-    {% endfor %}
-</tbody>
-</html>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ usuario.email }}</td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                  {% if usuario.graduacao == 'Iniciante' %}bg-blue-100 text-blue-800
+                  {% elif usuario.graduacao == 'Intermediário' %}bg-yellow-100 text-yellow-800
+                  {% elif usuario.graduacao == 'Avançado' %}bg-green-100 text-green-800
+                  {% else %}bg-purple-100 text-purple-800{% endif %}">
+                  {{ usuario.graduacao }}
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                  {% if usuario.status == 'ativo' %}bg-green-100 text-green-800
+                  {% else %}bg-red-100 text-red-800{% endif %}">
+                  {{ usuario.status|title }}
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <a href="{%}" class="text-blue-600 hover:text-blue-900">Editar</a>
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="6" class="px-6 py-4 text-center text-sm text-gray-500">Nenhum usuário encontrado.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
 
+</body>
+</html>
