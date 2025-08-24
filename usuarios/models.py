@@ -42,3 +42,12 @@ class Item(models.Model):
     
     def __str__(self):
         return self.nome
+    
+class Retirada(models.Model):
+    item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name="retiradas")
+    usuario = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    quantidade = models.PositiveIntegerField(default=1)
+    data_retirada = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.usuario} retirou {self.quantidade} de {self.item.nome} em {self.data_retirada:%d/%m/%Y}"

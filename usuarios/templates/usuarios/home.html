@@ -1,11 +1,398 @@
 <!DOCTYPE html>
-<html>
-<body>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestão de Estoques - Quartel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --secondary: #dc2626;
+            --accent: #059669;
+            --light: #f8fafc;
+            --dark: #0f172a;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            min-height: 100vh;
+        }
+        
+        .hero-gradient {
+            background: linear-gradient(135deg, var(--primary) 0%, #2d4ea8 100%);
+        }
+        
+        .stat-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .feature-card {
+            border-left: 4px solid var(--primary);
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            border-left-color: var(--secondary);
+            transform: translateX(5px);
+        }
+        
+        .military-pattern {
+            background-image: 
+                linear-gradient(rgba(30, 58, 138, 0.9), rgba(30, 58, 138, 0.9)),
+                url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+    <!-- Header -->
+    <header class="bg-white shadow-lg">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-blue-900 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-shield-alt text-white text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-gray-800">Sistema de Gestão Militar</h1>
+                        <p class="text-sm text-gray-600">Controle de Estoques e Materiais</p>
+                    </div>
+                </div>
+                
+                <nav class="hidden md:flex space-x-6">
+                    <a href="#" class="text-blue-900 font-medium hover:text-blue-700">Início</a>
+                    <a href="#" class="text-gray-600 hover:text-blue-900">Estoque</a>
+                    <a href="#" class="text-gray-600 hover:text-blue-900">Cautelas</a>
+                    <a href="#" class="text-gray-600 hover:text-blue-900">Relatórios</a>
+                    <a href="#" class="text-gray-600 hover:text-blue-900">Usuários</a>
+                </nav>
+                
+                <div class="flex items-center space-x-4">
+                    <button class="bg-blue-900 text-white px-4 py-2 rounded-lg hover:bg-blue-800 transition">
+                        <i class="fas fa-sign-in-alt mr-2"></i>Entrar
+                    </button>
+                    <button class="md:hidden text-gray-600">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
 
-<h1>Hello World!</h1>
-<p>Welcome to my first Django project!</p>
+    <!-- Hero Section -->
+    <section class="military-pattern text-white py-16">
+        <div class="container mx-auto px-4 text-center">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-4xl md:text-5xl font-bold mb-6">Sistema Integrado de Gestão de Materiais</h2>
+                <p class="text-xl mb-8 opacity-90">Controle completo do estoque e cautela de materiais do quartel com eficiência e segurança</p>
+                
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <button class="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-lg font-semibold transition">
+                        <i class="fas fa-boxes mr-2"></i>Gerenciar Estoque
+                    </button>
+                    <button class="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg font-semibold transition">
+                        <i class="fas fa-clipboard-list mr-2"></i>Registrar Cautela
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
 
+    <!-- Stats Dashboard -->
+    <section class="py-12 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <h3 class="text-2xl font-bold text-center text-gray-800 mb-8">Visão Geral do Sistema</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="stat-card bg-white rounded-lg p-6 shadow-md">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600 text-sm">Total de Itens</p>
+                            <h4 class="text-3xl font-bold text-blue-900">1,247</h4>
+                        </div>
+                        <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-boxes text-blue-900 text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <span class="text-green-600 text-sm font-medium">
+                            <i class="fas fa-arrow-up mr-1"></i>5.2% desde o mês passado
+                        </span>
+                    </div>
+                </div>
 
+                <div class="stat-card bg-white rounded-lg p-6 shadow-md">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600 text-sm">Cautelas Ativas</p>
+                            <h4 class="text-3xl font-bold text-green-900">89</h4>
+                        </div>
+                        <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-clipboard-check text-green-900 text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <span class="text-red-600 text-sm font-medium">
+                            <i class="fas fa-arrow-down mr-1"></i>2.1% desde a semana passada
+                        </span>
+                    </div>
+                </div>
 
+                <div class="stat-card bg-white rounded-lg p-6 shadow-md">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600 text-sm">Itens Críticos</p>
+                            <h4 class="text-3xl font-bold text-red-900">23</h4>
+                        </div>
+                        <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-exclamation-triangle text-red-900 text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <span class="text-yellow-600 text-sm font-medium">
+                            <i class="fas fa-minus mr-1"></i>Estável desde ontem
+                        </span>
+                    </div>
+                </div>
+
+                <div class="stat-card bg-white rounded-lg p-6 shadow-md">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600 text-sm">Usuários Ativos</p>
+                            <h4 class="text-3xl font-bold text-purple-900">42</h4>
+                        </div>
+                        <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-users text-purple-900 text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <span class="text-green-600 text-sm font-medium">
+                            <i class="fas fa-arrow-up mr-1"></i>8.7% desde o mês passado
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <h3 class="text-3xl font-bold text-center text-gray-800 mb-12">Funcionalidades Principais</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="feature-card bg-gray-50 p-6 rounded-lg">
+                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                        <i class="fas fa-warehouse text-blue-900 text-2xl"></i>
+                    </div>
+                    <h4 class="text-xl font-semibold text-gray-800 mb-3">Controle de Estoque</h4>
+                    <p class="text-gray-600">Gestão completa do inventário com controle de entradas, saídas e saldos em tempo real.</p>
+                </div>
+
+                <div class="feature-card bg-gray-50 p-6 rounded-lg">
+                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                        <i class="fas fa-clipboard-list text-green-900 text-2xl"></i>
+                    </div>
+                    <h4 class="text-xl font-semibold text-gray-800 mb-3">Sistema de Cautelas</h4>
+                    <p class="text-gray-600">Registro e acompanhamento de materiais cautelados com responsáveis e prazos definidos.</p>
+                </div>
+
+                <div class="feature-card bg-gray-50 p-6 rounded-lg">
+                    <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
+                        <i class="fas fa-chart-bar text-red-900 text-2xl"></i>
+                    </div>
+                    <h4 class="text-xl font-semibold text-gray-800 mb-3">Relatórios Analíticos</h4>
+                    <p class="text-gray-600">Geração de relatórios detalhados com gráficos e estatísticas para tomada de decisão.</p>
+                </div>
+
+                <div class="feature-card bg-gray-50 p-6 rounded-lg">
+                    <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mb-4">
+                        <i class="fas fa-bell text-purple-900 text-2xl"></i>
+                    </div>
+                    <h4 class="text-xl font-semibold text-gray-800 mb-3">Alertas Inteligentes</h4>
+                    <p class="text-gray-600">Sistema de notificações para itens com estoque crítico e cautelas próximas do vencimento.</p>
+                </div>
+
+                <div class="feature-card bg-gray-50 p-6 rounded-lg">
+                    <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mb-4">
+                        <i class="fas fa-qrcode text-yellow-900 text-2xl"></i>
+                    </div>
+                    <h4 class="text-xl font-semibold text-gray-800 mb-3">Controle por QR Code</h4>
+                    <p class="text-gray-600">Identificação rápida de materiais através de código QR para inventário e controle.</p>
+                </div>
+
+                <div class="feature-card bg-gray-50 p-6 rounded-lg">
+                    <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mb-4">
+                        <i class="fas fa-shield-alt text-indigo-900 text-2xl"></i>
+                    </div>
+                    <h4 class="text-xl font-semibold text-gray-800 mb-3">Segurança Militar</h4>
+                    <p class="text-gray-600">Sistema com múltiplos níveis de acesso e auditoria completa de todas as operações.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Recent Activity -->
+    <section class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-6">Últimas Movimentações</h3>
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full">
+                                <thead class="bg-gray-100">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Item</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tipo</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Data</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-200">
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">Fuzil 5.56mm</td>
+                                        <td class="px-6 py-4 whitespace-nowrap"><span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Entrada</span></td>
+                                        <td class="px-6 py-4 whitespace-nowrap">10/11/2023</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">Colete Balístico</td>
+                                        <td class="px-6 py-4 whitespace-nowrap"><span class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">Saída</span></td>
+                                        <td class="px-6 py-4 whitespace-nowrap">09/11/2023</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">Munição 9mm</td>
+                                        <td class="px-6 py-4 whitespace-nowrap"><span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">Cautela</span></td>
+                                        <td class="px-6 py-4 whitespace-nowrap">08/11/2023</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">Rádio Comunicador</td>
+                                        <td class="px-6 py-4 whitespace-nowrap"><span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Entrada</span></td>
+                                        <td class="px-6 py-4 whitespace-nowrap">07/11/2023</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-6">Cautelas Pendentes</h3>
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full">
+                                <thead class="bg-gray-100">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Material</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Responsável</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Vencimento</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-200">
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">Binóculo Militar</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">Sgt. Silva</td>
+                                        <td class="px-6 py-4 whitespace-nowrap"><span class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">15/11/2023</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">GPS Tático</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">Cb. Santos</td>
+                                        <td class="px-6 py-4 whitespace-nowrap"><span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">20/11/2023</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">Kit Primeiros Socorros</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">Ten. Oliveira</td>
+                                        <td class="px-6 py-4 whitespace-nowrap"><span class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">12/11/2023</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12 mt-auto">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Sistema Militar</h4>
+                    <p class="text-gray-400">Solução integrada para gestão de estoques e materiais de unidades militares.</p>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Contato</h4>
+                    <p class="text-gray-400 mb-2"><i class="fas fa-phone mr-2"></i>(XX) XXXX-XXXX</p>
+                    <p class="text-gray-400 mb-2"><i class="fas fa-envelope mr-2"></i>estoque@quartel.mil.br</p>
+                    <p class="text-gray-400"><i class="fas fa-map-marker-alt mr-2"></i>Quartel General</p>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Links Rápidos</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white">Manual do Sistema</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Normas de Uso</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Suporte Técnico</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Segurança</h4>
+                    <p class="text-gray-400 text-sm">Sistema certificado conforme normas de segurança militar. Todos os direitos reservados.</p>
+                    <div class="mt-4 flex space-x-2">
+                        <div class="w-8 h-8 bg-blue-600 rounded flex items-center justify-center">
+                            <i class="fas fa-lock text-xs"></i>
+                        </div>
+                        <div class="w-8 h-8 bg-green-600 rounded flex items-center justify-center">
+                            <i class="fas fa-shield-alt text-xs"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center">
+                <p class="text-gray-400 text-sm">© 2023 Sistema de Gestão Militar. Desenvolvido para as Forças Armadas.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Simulação de dados em tempo real
+        function updateStats() {
+            const stats = document.querySelectorAll('.stat-card h4');
+            stats.forEach(stat => {
+                const current = parseInt(stat.textContent.replace(/,/g, ''));
+                const randomChange = Math.floor(Math.random() * 10) - 2;
+                const newValue = Math.max(0, current + randomChange);
+                stat.textContent = newValue.toLocaleString();
+            });
+        }
+
+        // Atualizar estatísticas a cada 30 segundos (simulação)
+        setInterval(updateStats, 30000);
+
+        // Animação simples para os cards
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.stat-card, .feature-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+    </script>
 </body>
 </html>
+

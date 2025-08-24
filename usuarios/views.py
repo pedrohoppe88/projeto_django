@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from .forms import UsuarioForm
 from .forms import UsuarioForm, LoginForm
-from .models import Usuario
+from .models import Retirada, Usuario
 from django.contrib.auth.hashers import check_password
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
@@ -21,6 +21,7 @@ def cadastrar_usuario(request):
         form = UsuarioForm()
     return render(request, 'usuarios/cadastrar.html', {'form': form})
 
+@login_required
 def sucesso(request):
     usuario_id = request.session.get('usuario_id')
     usuario = Usuario.objects.get(id=usuario_id) if usuario_id else None
@@ -162,3 +163,25 @@ def criar_sessao(request):
 def mostrar_sessao(request):
     usuario_id = request.session.get('usuario_id')
     return HttpResponse(f"Usuário logado (usuario_id): {usuario_id}")
+
+def retirar_item(request, item_id):
+    item = get_object_or_404(Item, id=item_id)
+
+    if request.method == "POST":
+        quantidade = int(request.POST.get("quantidade", 1))
+
+        if quantidade <= item.quantidade:
+            # cria registro da retirada
+            Retirada.objects.create(
+            item=item,
+                usuario=request.user,
+                quantidade=quantidade
+            )
+
+            # atualiza estoque
+            item.quantidade -= quantidade
+            item.save()
+        else:
+            messages.error(request, "Quantidade solicitada maior que disponível.")
+
+        return redirect("detalhes_sessao", sessao_id=item.sessao.id)
