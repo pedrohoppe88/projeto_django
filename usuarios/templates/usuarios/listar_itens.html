@@ -348,8 +348,20 @@
         <a href="{% url 'listar_sessoes' %}" class="btn btn-outline-light w-100 mb-3">← Voltar para Sessões</a>
         <button class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#modalCadastrarItem">
             ➕ Adicionar Item
-        </button>
+        </button>   
+
+  <div class="mb-3 d-flex justify-content-end">
+    <a href="{% url 'gerar_relatorio_pdf' sessao.id %}" class="btn btn-success" target="_blank">
+        📝 Gerar Relatório PDF
+    </a>
+</div>
+        
+        <div class="mb-3">
+</div>
+
+
     </aside>
+    
 
     <!-- Main content -->
     <main class="main-content">

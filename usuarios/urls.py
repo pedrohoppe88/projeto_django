@@ -13,4 +13,7 @@ urlpatterns = [
     path("sessao/<int:sessao_id>/adicionar_item/", views.adicionar_item, name="adicionar_item"),
     path('item/<int:item_id>/retirar/', views.retirar_item, name='retirar_item'),
     path('retirada/<int:retirada_id>/remover/', views.remover_retirada, name='remover_retirada'),
+    path('sessao/<int:sessao_id>/itens/relatorio/pdf/', views.gerar_relatorio_pdf, name='gerar_relatorio_pdf'),
+
+
 ]

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Relatório de Cautelas - {{ sessao.nome }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; font-size: 12px; margin: 20px; }
+        h1 { text-align: center; color: #0d1b2a; }
+        h2 { color: #3ac569; margin-top: 30px; border-bottom: 1px solid #3ac569; padding-bottom: 5px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #0d1b2a; padding: 8px; text-align: left; }
+        th { background-color: #3ac569; color: #fff; }
+        tr:nth-child(even) { background-color: #f0f0f0; }
+        .no-retirada { font-style: italic; color: #555; text-align: center; }
+    </style>
+</head>
+<body>
+    <h1>Relatório de Cautelas</h1>
+    <h2>Sessão: {{ sessao.nome }}</h2>
+
+    {% for item in sessao.itens.all %}
+        <h2>Item: {{ item.nome }} ({{ item.quantidade }} disponível)</h2>
+        {% with retiradas=item.retiradas.all %}
+            {% if retiradas %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Quem retirou</th>
+                            <th>Quantidade</th>
+                            <th>Data da retirada</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for retirada in retiradas %}
+                        <tr>
+                            <td>{{ retirada.usuario.nome }}</td>
+                            <td>{{ retirada.quantidade }}</td>
+                            <td>{{ retirada.data_retirada|date:"d/m/Y H:i" }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="no-retirada">Nenhuma retirada registrada para este item.</p>
+            {% endif %}
+        {% endwith %}
+    {% empty %}
+        <p class="no-retirada">Nenhum item cadastrado nesta sessão.</p>
+    {% endfor %}
+</body>
+</html>

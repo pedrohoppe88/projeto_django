@@ -226,12 +226,11 @@ def listar_itens(request, sessao_id):
                 retirada_existente.quantidade += quantidade
                 retirada_existente.save()
             else:
-                Retirada.objects.create(
-                    item=item,
-                    usuario=usuario,
-                    quantidade=quantidade,
-                    data_retirada=timezone.now()
-                )
+              Retirada.objects.create(
+                item=item,
+                usuario=usuario,
+                quantidade=quantidade
+            )
 
             # Atualiza estoque
             item.quantidade -= quantidade
@@ -312,7 +311,6 @@ def remover_retirada(request, retirada_id):
 
         qtd_remover = int(request.POST.get("quantidade", retirada.quantidade))
         if qtd_remover >= retirada.quantidade:
-            # Remove toda a retirada e devolve tudo ao estoque
             item.quantidade += retirada.quantidade
             item.save()
             retirada.delete()
@@ -328,3 +326,24 @@ def remover_retirada(request, retirada_id):
     return redirect("listar_itens", sessao_id=item.sessao.id)
 
 
+from django.template.loader import get_template
+from django.http import HttpResponse
+from xhtml2pdf import pisa
+from .models import Retirada
+
+def gerar_relatorio_pdf(request, sessao_id):
+    sessao = get_object_or_404(Sessao, id=sessao_id)
+    
+    template_path = 'usuarios/relatorio_cautelas.html'
+    context = {'sessao': sessao}
+    
+    template = get_template(template_path)
+    html = template.render(context)
+    
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'filename="relatorio_sessao_{sessao.id}.pdf"'
+    
+    pisa_status = pisa.CreatePDF(html, dest=response)
+    if pisa_status.err:
+        return HttpResponse("Erro ao gerar PDF")
+    return response
