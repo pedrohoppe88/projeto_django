@@ -1,115 +1,461 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
-    <title>Itens da Sessão {{ sessao.nome }}</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Dashboard - Itens da Sessão {{ sessao.nome }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Reset e base */
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 250px;
+            background-color: #0d1b2a; /* azul escuro */
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem 1rem;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+            z-index: 1030;
+        }
+        .sidebar h2 {
+            font-weight: 700;
+            font-size: 1.8rem;
+            margin-bottom: 2rem;
+            letter-spacing: 1.5px;
+            user-select: none;
+        }
+        .sidebar a.btn {
+            margin-bottom: 1rem;
+            font-weight: 600;
+            text-align: center;
+        }
+        .sidebar a.btn-outline-light {
+            color: #a8c0ff;
+            border-color: #a8c0ff;
+        }
+        .sidebar a.btn-outline-light:hover {
+            background-color: #a8c0ff;
+            color: #0d1b2a;
+        }
+        .sidebar button.btn-success {
+            background-color: #3ac569; /* verde */
+            border: none;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+        .sidebar button.btn-success:hover {
+            background-color: #2ea851;
+        }
+
+        /* Main content */
+        .main-content {
+            margin-left: 250px;
+            padding: 2rem 2.5rem;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        .main-header {
+            margin-bottom: 2rem;
+            color: #0d1b2a;
+            font-weight: 700;
+            font-size: 2rem;
+            user-select: none;
+        }
+        .main-header span.session-name {
+            color: #3ac569; /* verde */
+        }
+
+        /* Pesquisa */
+        #pesquisaItem {
+            max-width: 400px;
+            margin-bottom: 2rem;
+            border-radius: 0.375rem;
+            border: 1.5px solid #a8c0ff;
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        #pesquisaItem:focus {
+            outline: none;
+            border-color: #3ac569;
+            box-shadow: 0 0 8px #3ac569aa;
+        }
+
+        /* Cards container */
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill,minmax(320px,1fr));
+            gap: 1.5rem;
+        }
+
+        /* Card base */
+        .card-item {
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 15px rgb(0 0 0 / 0.1);
+            display: flex;
+            flex-direction: column;
+            background-color: #fff;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .card-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgb(0 0 0 / 0.15);
+        }
+        .card-header {
+            padding: 1.25rem 1.5rem;
+            border-radius: 0.75rem 0.75rem 0 0;
+            color: #fff;
+            font-weight: 700;
+            font-size: 1.25rem;
+            user-select: none;
+        }
+        .card-body {
+            padding: 1.5rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .card-quantity {
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 1rem;
+        }
+
+        /* Cores dos cards */
+        .card-blue {
+            background-color: #0d1b2a;
+        }
+        .card-green {
+            background-color: #3ac569;
+        }
+        .card-red {
+            background-color: #e63946;
+        }
+
+        /* Lista de retiradas */
+        .retirada-list {
+            list-style: none;
+            padding-left: 0;
+            margin-bottom: 1rem;
+            max-height: 140px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            background-color: #fafafa;
+        }
+        .retirada-list li {
+            font-size: 0.9rem;
+            margin-bottom: 0.4rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .retirada-list li:last-child {
+            margin-bottom: 0;
+        }
+        .retirada-info {
+            flex-grow: 1;
+            color: #333;
+        }
+        .badge-quantidade {
+            background-color: #0d1b2a;
+            color: #fff;
+            font-weight: 600;
+            padding: 0.2rem 0.5rem;
+            border-radius: 0.375rem;
+            margin-left: 0.5rem;
+        }
+
+        /* Form retirar */
+        .form-retirar {
+            margin-top: auto;
+        }
+        .form-retirar label {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #0d1b2a;
+        }
+        .form-retirar select,
+        .form-retirar input[type=number] {
+            border-radius: 0.375rem;
+            border: 1.5px solid #a8c0ff;
+            padding: 0.3rem 0.5rem;
+            font-size: 0.9rem;
+            transition: border-color 0.3s ease;
+        }
+        .form-retirar select:focus,
+        .form-retirar input[type=number]:focus {
+            outline: none;
+            border-color: #3ac569;
+            box-shadow: 0 0 6px #3ac569aa;
+        }
+        .form-retirar button {
+            margin-top: 0.75rem;
+            width: 100%;
+            font-weight: 700;
+            background-color: #0d1b2a;
+            border: none;
+            color: #fff;
+            padding: 0.5rem 0;
+            border-radius: 0.5rem;
+            transition: background-color 0.3s ease;
+        }
+        .form-retirar button:hover {
+            background-color: #07111a;
+        }
+
+        /* Form remover retirada */
+        .form-remover {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            margin-left: 1rem;
+        }
+        .form-remover input[type=number] {
+            width: 60px;
+            border-radius: 0.375rem;
+            border: 1.5px solid #e63946;
+            padding: 0.15rem 0.3rem;
+            font-size: 0.85rem;
+            color: #e63946;
+            font-weight: 600;
+            transition: border-color 0.3s ease;
+        }
+        .form-remover input[type=number]:focus {
+            outline: none;
+            border-color: #a62834;
+            box-shadow: 0 0 6px #a62834aa;
+        }
+        .form-remover button {
+            background-color: #e63946;
+            border: none;
+            color: #fff;
+            font-size: 0.85rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .form-remover button:hover {
+            background-color: #a62834;
+        }
+
+        /* Scrollbar customizada para retiradas */
+        .retirada-list::-webkit-scrollbar {
+            width: 6px;
+        }
+        .retirada-list::-webkit-scrollbar-thumb {
+            background-color: #3ac569aa;
+            border-radius: 3px;
+        }
+        .retirada-list::-webkit-scrollbar-track {
+            background-color: #f0f2f5;
+        }
+
+        /* Modal custom */
+        .modal-header {
+            background-color: #0d1b2a;
+            color: #fff;
+            font-weight: 700;
+            border-bottom: none;
+        }
+        .modal-footer {
+            border-top: none;
+        }
+        .modal-content {
+            border-radius: 1rem;
+            overflow: hidden;
+        }
+        .modal-body label {
+            font-weight: 600;
+            color: #0d1b2a;
+        }
+        .modal-body input {
+            border-radius: 0.5rem;
+            border: 1.5px solid #a8c0ff;
+            padding: 0.5rem;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        .modal-body input:focus {
+            outline: none;
+            border-color: #3ac569;
+            box-shadow: 0 0 8px #3ac569aa;
+        }
+        .btn-success {
+            background-color: #3ac569;
+            border: none;
+            font-weight: 700;
+            transition: background-color 0.3s ease;
+        }
+        .btn-success:hover {
+            background-color: #2ea851;
+        }
+        .btn-secondary {
+            font-weight: 600;
+            border-radius: 0.5rem;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                flex-direction: row;
+                justify-content: space-between;
+                padding: 1rem 1.5rem;
+                box-shadow: none;
+            }
+            .sidebar h2 {
+                font-size: 1.3rem;
+                margin-bottom: 0;
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 1rem 1rem 2rem;
+            }
+            .cards-container {
+                grid-template-columns: 1fr;
+            }
+            .form-retirar button {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
-<body class="p-4">
+<body>
 
-    <h1 class="mb-3">Itens da Sessão {{ sessao.nome }}</h1>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <h2>Dashboard</h2>
+        <a href="{% url 'listar_sessoes' %}" class="btn btn-outline-light w-100 mb-3">← Voltar para Sessões</a>
+        <button class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#modalCadastrarItem">
+            ➕ Adicionar Item
+        </button>
+    </aside>
 
-    <!-- Botão que abre o modal -->
-    <button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#modalCadastrarItem">
-        ➕ Adicionar Item
-    </button>
+    <!-- Main content -->
+    <main class="main-content">
+        <header class="main-header">
+            Itens da Sessão <span class="session-name">{{ sessao.nome }}</span>
+        </header>
 
-    <!-- Campo de pesquisa -->
-    <div class="mb-3">
-        <input type="text" id="pesquisaItem" class="form-control" placeholder="Pesquisar item...">
-    </div>
+        <input type="text" id="pesquisaItem" placeholder="Pesquisar item..." aria-label="Pesquisar item" />
 
-    <!-- Lista de Itens -->
-    <ul class="list-group" id="listaItens">
-        {% for item in itens %}
-            <li class="list-group-item" data-nome="{{ item.nome|lower }}">
-                <strong>{{ item.nome }}</strong> ({{ item.quantidade }} cadastrados)
+        <section class="cards-container" id="listaItens">
+            {% for item in itens %}
+            <article class="card-item" data-nome="{{ item.nome|lower }}">
+                <header class="card-header card-blue">
+                    {{ item.nome }}
+                </header>
+                <div class="card-body">
+                    <div class="card-quantity">{{ item.quantidade }} cadastrados</div>
 
-                <!-- Lista de retiradas -->
-                <ul>
-                    {% for retirada in item.retiradas.all %}
+                    <h6>Retiradas:</h6>
+                    <ul class="retirada-list">
+                        {% for retirada in item.retiradas.all %}
                         <li>
-                            {{ retirada.usuario.nome }} retirou {{ retirada.quantidade }} em {{ retirada.data_retirada|date:"d/m/Y H:i" }}
-                            <!-- Botão para remover retirada (com campo para quantidade) -->
-                            <form method="post" action="{% url 'remover_retirada' retirada.id %}?next={% url 'listar_itens' sessao.id %}" style="display:inline;">
+                            <div class="retirada-info">
+                                <strong>{{ retirada.usuario.nome }}</strong> retirou 
+                                <span class="badge-quantidade">{{ retirada.quantidade }}</span> em 
+                                <small>{{ retirada.data_retirada|date:"d/m/Y H:i" }}</small>
+                            </div>
+                            <form method="post" action="{% url 'remover_retirada' retirada.id %}?next={% url 'listar_itens' sessao.id %}" class="form-remover">
                                 {% csrf_token %}
-                                <input type="number" name="quantidade" min="1" max="{{ retirada.quantidade }}" value="{{ retirada.quantidade }}" style="width:60px;display:inline;">
-                                <button type="submit" class="btn btn-danger btn-sm">Remover</button>
+                                <input type="number" name="quantidade" min="1" max="{{ retirada.quantidade }}" value="{{ retirada.quantidade }}" required />
+                                <button type="submit" title="Remover retirada">✖</button>
                             </form>
                         </li>
-                    {% empty %}
-                        <li>Ninguém retirou ainda</li>
-                    {% endfor %}
-                </ul>
-
-                <!-- Formulário para retirar -->
-                <form method="post" action="{% url 'retirar_item' item.id %}" class="mt-2">
-                    {% csrf_token %}
-                    <label>Quem pegou:</label>
-                    <select name="usuario" class="form-select form-select-sm" required>
-                        {% for usuario in usuarios %}
-                            <option value="{{ usuario.id }}">{{ usuario.nome }} - {{ usuario.get_graduacao_display }}</option>
+                        {% empty %}
+                        <li class="text-muted fst-italic">Ninguém retirou ainda</li>
                         {% endfor %}
-                    </select>
+                    </ul>
 
-                    <label>Quantidade:</label>
-                    <input type="number" name="quantidade" min="1" max="{{ item.quantidade }}" value="1" class="form-control form-control-sm mt-1">
+                    <form method="post" action="{% url 'retirar_item' item.id %}" class="form-retirar">
+                        {% csrf_token %}
+                        <label for="usuario-{{ item.id }}">Quem pegou:</label>
+                        <select id="usuario-{{ item.id }}" name="usuario" required>
+                            {% for usuario in usuarios %}
+                            <option value="{{ usuario.id }}">{{ usuario.nome }} - {{ usuario.get_graduacao_display }}</option>
+                            {% endfor %}
+                        </select>
 
-                    <button type="submit" class="btn btn-primary btn-sm mt-2">Registrar Retirada</button>
-                </form>
-            </li>
-        {% empty %}
-            <li class="list-group-item">Nenhum item cadastrado ainda.</li>
-        {% endfor %}
-    </ul>
+                        <label for="quantidade-{{ item.id }}" class="mt-2">Quantidade:</label>
+                        <input id="quantidade-{{ item.id }}" type="number" name="quantidade" min="1" max="{{ item.quantidade }}" value="1" required />
 
-    <a href="{% url 'listar_sessoes' %}" class="btn btn-secondary mt-3">Voltar para Sessões</a>
+                        <button type="submit" class="mt-3">Registrar Retirada</button>
+                    </form>
+                </div>
+            </article>
+            {% empty %}
+            <div class="alert alert-info w-100 text-center" role="alert">
+                Nenhum item cadastrado ainda.
+            </div>
+            {% endfor %}
+        </section>
+    </main>
 
     <!-- Modal para Cadastrar Item -->
-    <div class="modal fade" id="modalCadastrarItem" tabindex="-1">
+    <div class="modal fade" id="modalCadastrarItem" tabindex="-1" aria-labelledby="modalCadastrarItemLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <form method="post" action="{% url 'adicionar_item' sessao.id %}">
                     {% csrf_token %}
                     <div class="modal-header">
-                        <h5 class="modal-title">Cadastrar Novo Item</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        <h5 class="modal-title" id="modalCadastrarItemLabel">Cadastrar Novo Item</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
                     </div>
                     <div class="modal-body">
                         <div class="mb-3">
-                            <label class="form-label">Nome do Item</label>
-                            <input type="text" name="nome" class="form-control" required>
+                            <label for="nomeItem" class="form-label">Nome do Item</label>
+                            <input type="text" id="nomeItem" name="nome" class="form-control" required />
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Quantidade</label>
-                            <input type="number" name="quantidade" class="form-control" min="1" required>
+                            <label for="quantidadeItem" class="form-label">Quantidade</label>
+                            <input type="number" id="quantidadeItem" name="quantidade" class="form-control" min="1" required />
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-success">Salvar</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 
-    <!-- ===================== -->
-    <!-- Script de pesquisa AJAX -->
-    <!-- ===================== -->
+    <!-- Script de pesquisa -->
     <script>
         const inputPesquisa = document.getElementById("pesquisaItem");
         const listaItens = document.getElementById("listaItens");
 
-        inputPesquisa.addEventListener("keyup", () => {
+        inputPesquisa.addEventListener("input", () => {
             const filtro = inputPesquisa.value.toLowerCase();
-            const itens = listaItens.querySelectorAll("li.list-group-item");
+            const cards = listaItens.querySelectorAll("article.card-item");
 
-            itens.forEach(li => {
-                const nome = li.getAttribute("data-nome");
+            cards.forEach(card => {
+                const nome = card.getAttribute("data-nome");
                 if (nome.includes(filtro)) {
-                    li.style.display = "block";
+                    card.style.display = "";
                 } else {
-                    li.style.display = "none";
+                    card.style.display = "none";
                 }
             });
         });

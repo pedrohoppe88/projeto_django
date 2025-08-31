@@ -217,13 +217,23 @@ def listar_itens(request, sessao_id):
         quantidade = int(request.POST.get("quantidade", 1))
         item = get_object_or_404(Item, id=item_id)
         usuario = get_object_or_404(Usuario, id=usuario_id)
+
         if quantidade <= item.quantidade:
-            Retirada.objects.create(
-                item=item,
-                usuario=usuario,
-                quantidade=quantidade,
-                data_retirada=timezone.now()
-            )
+            # Verifica se já existe retirada para o mesmo usuário + item
+            retirada_existente = Retirada.objects.filter(item=item, usuario=usuario).first()
+
+            if retirada_existente:
+                retirada_existente.quantidade += quantidade
+                retirada_existente.save()
+            else:
+                Retirada.objects.create(
+                    item=item,
+                    usuario=usuario,
+                    quantidade=quantidade,
+                    data_retirada=timezone.now()
+                )
+
+            # Atualiza estoque
             item.quantidade -= quantidade
             item.save()
         else:
@@ -273,14 +283,21 @@ def retirar_item(request, item_id):
         usuario = get_object_or_404(Usuario, id=usuario_id)
 
         if quantidade <= item.quantidade:
-            # Cresta criando o registro da retirada
-            Retirada.objects.create(
-                item=item,
-                usuario=usuario,
-                quantidade=quantidade,
-                data_retirada=timezone.now()
-            )
-            # Subtrai do estoque e salva
+            # Verifica se já existe retirada para o mesmo usuário + item
+            retirada_existente = Retirada.objects.filter(item=item, usuario=usuario).first()
+
+            if retirada_existente:
+                retirada_existente.quantidade += quantidade
+                retirada_existente.save()
+            else:
+                Retirada.objects.create(
+                    item=item,
+                    usuario=usuario,
+                    quantidade=quantidade,
+                    data_retirada=timezone.now()
+                )
+
+            # Atualiza estoque
             item.quantidade -= quantidade
             item.save()
         else:
@@ -309,3 +326,5 @@ def remover_retirada(request, retirada_id):
     if next_url:
         return redirect(next_url)
     return redirect("listar_itens", sessao_id=item.sessao.id)
+
+
