@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from .forms import UsuarioForm
-from .forms import UsuarioForm, LoginForm
+from .forms import UsuarioForm, LoginForm, SessaoForm
 from .models import Retirada, Usuario
 from django.contrib.auth.hashers import check_password
 from django.shortcuts import render, redirect, get_object_or_404
@@ -8,6 +8,8 @@ from django.contrib import messages
 from .models import Sessao, Item
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
+from django.utils import timezone
+from .models import Sessao, Item    
 
 def cadastrar_usuario(request):
     if request.method == 'POST':
@@ -21,8 +23,10 @@ def cadastrar_usuario(request):
         form = UsuarioForm()
     return render(request, 'usuarios/cadastrar.html', {'form': form})
 
-@login_required
 def sucesso(request):
+    if 'usuario_id' not in request.session:
+        return redirect('login')
+    
     usuario_id = request.session.get('usuario_id')
     usuario = Usuario.objects.get(id=usuario_id) if usuario_id else None
     nome = usuario.nome if usuario else None
@@ -40,7 +44,7 @@ def login_usuario(request):
                 usuario = Usuario.objects.get(email=email)
                 if check_password(senha, usuario.senha):
                     request.session['usuario_id'] = usuario.id  # salva sessão
-                    return redirect('home')
+                    return redirect('sucesso')
                 else:
                     form.add_error('senha', 'Senha incorreta.')
             except Usuario.DoesNotExist:
@@ -121,32 +125,41 @@ def detalhes_sessao(request, sessao_id):
 def adicionar_item(request, sessao_id):
     sessao = get_object_or_404(Sessao, id=sessao_id)
 
+    # Proteção: só o criador ou quem entrou na sessão pode adicionar
     if not request.user == sessao.criador and not request.session.get(f"sessao_{sessao.id}", False):
         messages.error(request, "Você não tem permissão!")
         return redirect("entrar_sessao", sessao_id=sessao.id)
 
     if request.method == "POST":
         nome = request.POST.get("nome")
-        quantidade = request.POST.get("quantidade", 1)
+        quantidade = int(request.POST.get("quantidade", 1))
         Item.objects.create(sessao=sessao, nome=nome, quantidade=quantidade)
-        return redirect("detalhes_sessao", sessao_id=sessao.id)
 
+        # 🔹 Redireciona de volta para a página de itens
+        return redirect("listar_itens", sessao_id=sessao.id)
+
+    # Se precisar de template separado (não usado no modal)
     return render(request, "adicionar_item.html", {"sessao": sessao})
 
+"""
+def cadastrar_usuario(request):
+    if request.method == 'POST':
+        form = UsuarioForm(request.POST)
+        if form.is_valid():
+            # Aqui você poderia hash a senha se quiser
+            form.save()
+            return redirect('login')
+           # return redirect('sucesso')
+    else:
+        form = UsuarioForm()
+    return render(request, 'usuarios/cadastrar.html', {'form': form})
 
-def excluir_item(request, item_id):
-    item = get_object_or_404(Item, id=item_id)
-    sessao = item.sessao
+-------------------------------
 
-    if not request.user == sessao.criador and not request.session.get(f"sessao_{sessao.id}", False):
-        messages.error(request, "Você não tem permissão para deletar!")
-        return redirect("entrar_sessao", sessao_id=sessao.id)
-
-    item.delete()
-    return redirect("detalhes_sessao", sessao_id=sessao.id)
-
-@login_required
 def criar_sessao(request):
+    if 'usuario_id' not in request.session:
+        return redirect('login')
+    
     if request.method == "POST":
         nome = request.POST.get("nome")
         senha = request.POST.get("senha")
@@ -160,28 +173,139 @@ def criar_sessao(request):
 
     return render(request, "usuarios/criar_sessao.html")
 
+
+"""
+
+def criar_sessao(request):
+    if 'usuario_id' not in request.session:
+        return redirect('login')
+
+    usuario_id = request.session.get('usuario_id')
+    criador = Usuario.objects.get(id=usuario_id) if usuario_id else None
+
+    if request.method == "POST":
+        form = SessaoForm(request.POST)
+        if form.is_valid():
+            form.saveSessao(criador=criador)
+            messages.success(request, "Sessão criada com sucesso!")
+            return redirect("listar_sessoes")
+    else:
+        form = SessaoForm()
+
+    return render(request, "usuarios/criar_sessao.html", {'form': form})
+
 def mostrar_sessao(request):
     usuario_id = request.session.get('usuario_id')
     return HttpResponse(f"Usuário logado (usuario_id): {usuario_id}")
+
+def listar_sessoes(request):
+    if 'usuario_id' not in request.session:
+        return redirect('login')
+    sessoes = Sessao.objects.all()
+    return render(request, 'usuarios/listar_sessoes.html', {'sessoes': sessoes})
+
+def listar_itens(request, sessao_id):
+    sessao = get_object_or_404(Sessao, id=sessao_id)
+
+    if not request.session.get(f"sessao_{sessao.id}", False):
+        return redirect("listar_sessoes")
+
+    # Processa retirada se for POST (chama a lógica de retirar_item)
+    if request.method == "POST" and 'retirar_item' in request.POST:
+        item_id = request.POST.get("item_id")
+        usuario_id = request.POST.get("usuario")
+        quantidade = int(request.POST.get("quantidade", 1))
+        item = get_object_or_404(Item, id=item_id)
+        usuario = get_object_or_404(Usuario, id=usuario_id)
+        if quantidade <= item.quantidade:
+            Retirada.objects.create(
+                item=item,
+                usuario=usuario,
+                quantidade=quantidade,
+                data_retirada=timezone.now()
+            )
+            item.quantidade -= quantidade
+            item.save()
+        else:
+            messages.error(request, "Quantidade solicitada maior que disponível.")
+        return redirect("listar_itens", sessao_id=sessao.id)
+
+    itens = sessao.itens.all()
+    usuarios = Usuario.objects.all()
+    return render(request, "usuarios/listar_itens.html", {
+        "sessao": sessao,
+        "itens": itens,
+        "usuarios": usuarios
+    })
+    
+
+from django.http import JsonResponse
+from django.urls import reverse
+
+def validar_sessao(request, sessao_id):
+    if request.method == "POST":
+        sessao = get_object_or_404(Sessao, id=sessao_id)
+        senha = request.POST.get("senha")
+
+        if senha == sessao.senha:  # ⚠️ use hash em produção
+            # salva login na sessão do usuário
+            request.session[f"sessao_{sessao.id}"] = True  
+
+            return JsonResponse({
+                "success": True,
+                "redirect_url": reverse("listar_itens", args=[sessao.id])
+            })
+        else:
+            return JsonResponse({
+                "success": False,
+                "error": "Senha incorreta!"
+            })
+
+    return JsonResponse({"success": False, "error": "Método inválido."}, status=400)
 
 def retirar_item(request, item_id):
     item = get_object_or_404(Item, id=item_id)
 
     if request.method == "POST":
+        usuario_id = request.POST.get("usuario")
         quantidade = int(request.POST.get("quantidade", 1))
 
-        if quantidade <= item.quantidade:
-            # cria registro da retirada
-            Retirada.objects.create(
-            item=item,
-                usuario=request.user,
-                quantidade=quantidade
-            )
+        usuario = get_object_or_404(Usuario, id=usuario_id)
 
-            # atualiza estoque
+        if quantidade <= item.quantidade:
+            # Cresta criando o registro da retirada
+            Retirada.objects.create(
+                item=item,
+                usuario=usuario,
+                quantidade=quantidade,
+                data_retirada=timezone.now()
+            )
+            # Subtrai do estoque e salva
             item.quantidade -= quantidade
             item.save()
         else:
             messages.error(request, "Quantidade solicitada maior que disponível.")
 
-        return redirect("detalhes_sessao", sessao_id=item.sessao.id)
+        return redirect("listar_itens", sessao_id=item.sessao.id)
+
+def remover_retirada(request, retirada_id):
+    retirada = get_object_or_404(Retirada, id=retirada_id)
+    item = retirada.item
+    if request.method == "POST":
+
+        qtd_remover = int(request.POST.get("quantidade", retirada.quantidade))
+        if qtd_remover >= retirada.quantidade:
+            # Remove toda a retirada e devolve tudo ao estoque
+            item.quantidade += retirada.quantidade
+            item.save()
+            retirada.delete()
+        else:
+            # Remove apenas parte da retirada
+            item.quantidade += qtd_remover
+            item.save()
+            retirada.quantidade -= qtd_remover
+            retirada.save()
+    next_url = request.GET.get('next')
+    if next_url:
+        return redirect(next_url)
+    return redirect("listar_itens", sessao_id=item.sessao.id)

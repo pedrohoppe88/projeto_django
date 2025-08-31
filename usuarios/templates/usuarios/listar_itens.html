@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Itens da Sessão {{ sessao.nome }}</title>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="p-4">
+
+    <h1 class="mb-3">Itens da Sessão {{ sessao.nome }}</h1>
+
+    <!-- Botão que abre o modal -->
+    <button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#modalCadastrarItem">
+        ➕ Adicionar Item
+    </button>
+
+    <!-- Campo de pesquisa -->
+    <div class="mb-3">
+        <input type="text" id="pesquisaItem" class="form-control" placeholder="Pesquisar item...">
+    </div>
+
+    <!-- Lista de Itens -->
+    <ul class="list-group" id="listaItens">
+        {% for item in itens %}
+            <li class="list-group-item" data-nome="{{ item.nome|lower }}">
+                <strong>{{ item.nome }}</strong> ({{ item.quantidade }} cadastrados)
+
+                <!-- Lista de retiradas -->
+                <ul>
+                    {% for retirada in item.retiradas.all %}
+                        <li>
+                            {{ retirada.usuario.nome }} retirou {{ retirada.quantidade }} em {{ retirada.data_retirada|date:"d/m/Y H:i" }}
+                            <!-- Botão para remover retirada (com campo para quantidade) -->
+                            <form method="post" action="{% url 'remover_retirada' retirada.id %}?next={% url 'listar_itens' sessao.id %}" style="display:inline;">
+                                {% csrf_token %}
+                                <input type="number" name="quantidade" min="1" max="{{ retirada.quantidade }}" value="{{ retirada.quantidade }}" style="width:60px;display:inline;">
+                                <button type="submit" class="btn btn-danger btn-sm">Remover</button>
+                            </form>
+                        </li>
+                    {% empty %}
+                        <li>Ninguém retirou ainda</li>
+                    {% endfor %}
+                </ul>
+
+                <!-- Formulário para retirar -->
+                <form method="post" action="{% url 'retirar_item' item.id %}" class="mt-2">
+                    {% csrf_token %}
+                    <label>Quem pegou:</label>
+                    <select name="usuario" class="form-select form-select-sm" required>
+                        {% for usuario in usuarios %}
+                            <option value="{{ usuario.id }}">{{ usuario.nome }} - {{ usuario.get_graduacao_display }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <label>Quantidade:</label>
+                    <input type="number" name="quantidade" min="1" max="{{ item.quantidade }}" value="1" class="form-control form-control-sm mt-1">
+
+                    <button type="submit" class="btn btn-primary btn-sm mt-2">Registrar Retirada</button>
+                </form>
+            </li>
+        {% empty %}
+            <li class="list-group-item">Nenhum item cadastrado ainda.</li>
+        {% endfor %}
+    </ul>
+
+    <a href="{% url 'listar_sessoes' %}" class="btn btn-secondary mt-3">Voltar para Sessões</a>
+
+    <!-- Modal para Cadastrar Item -->
+    <div class="modal fade" id="modalCadastrarItem" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="post" action="{% url 'adicionar_item' sessao.id %}">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <h5 class="modal-title">Cadastrar Novo Item</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">Nome do Item</label>
+                            <input type="text" name="nome" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Quantidade</label>
+                            <input type="number" name="quantidade" class="form-control" min="1" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success">Salvar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== -->
+    <!-- Script de pesquisa AJAX -->
+    <!-- ===================== -->
+    <script>
+        const inputPesquisa = document.getElementById("pesquisaItem");
+        const listaItens = document.getElementById("listaItens");
+
+        inputPesquisa.addEventListener("keyup", () => {
+            const filtro = inputPesquisa.value.toLowerCase();
+            const itens = listaItens.querySelectorAll("li.list-group-item");
+
+            itens.forEach(li => {
+                const nome = li.getAttribute("data-nome");
+                if (nome.includes(filtro)) {
+                    li.style.display = "block";
+                } else {
+                    li.style.display = "none";
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>

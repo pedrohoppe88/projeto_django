@@ -13,4 +13,6 @@ urlpatterns = [
     path('usuarios/', include('usuarios.urls')),
     path('accounts/login/', views.login_usuario, name='accounts_login'),
     path('', home, name='home'),
+    path("validar_sessao/<int:sessao_id>/", views.validar_sessao, name="validar_sessao"),
+    path("sessoes/<int:sessao_id>/itens/", views.listar_itens, name="listar_itens"),
 ]

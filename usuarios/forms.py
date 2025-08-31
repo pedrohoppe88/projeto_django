@@ -21,3 +21,17 @@ class UsuarioForm(forms.ModelForm):
 class LoginForm(forms.Form):
     email = forms.EmailField(label="E-mail")
     senha = forms.CharField(label="Senha", widget=forms.PasswordInput)
+    
+class SessaoForm(forms.Form):
+    nome = forms.CharField(label="Nome da Sessão", max_length=100)
+    senha = forms.CharField(label="Senha", widget=forms.PasswordInput)
+    
+    def saveSessao(self, criador):
+        from .models import Sessao
+        sessao = Sessao(
+            nome=self.cleaned_data['nome'],
+            senha=self.cleaned_data['senha'],
+            criador=criador
+        )
+        sessao.save()
+        return sessao
