@@ -347,3 +347,12 @@ def gerar_relatorio_pdf(request, sessao_id):
     if pisa_status.err:
         return HttpResponse("Erro ao gerar PDF")
     return response
+
+
+def excluir_item(request, item_id):
+    item = get_object_or_404(Item, id=item_id)
+    sessao_id = item.sessao.id  # Salva o ID da sessão antes de excluir o item
+    if request.method == "POST":
+        item.delete()
+        return redirect("listar_itens", sessao_id=sessao_id)  # Redireciona usando o ID salvo
+    return render(request, "usuarios/confirmar_exclusao.html", {"item": item})

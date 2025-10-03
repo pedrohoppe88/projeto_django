@@ -78,9 +78,9 @@ WSGI_APPLICATION = 'project.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'djangoaula',    # 🔹 usar string
+        'NAME': 'Django_Cautela',    # 🔹 usar string
         'USER': 'root',
-        'PASSWORD': '12345',
+        'PASSWORD': 'nova_senha',
         'HOST': 'localhost',
         'PORT': '3306',
     }
