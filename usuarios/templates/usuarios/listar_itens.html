@@ -8,11 +8,26 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <style>
         /* Reset e base */
+        :root {
+            --primary-color: #0d1b2a;
+            --primary-light: #1b263b;
+            --success-color: #3ac569;
+            --danger-color: #e63946;
+            --text-light: #cfd8dc;
+            --text-muted: #a0aebf;
+            --input-bg: #1a2a44;
+            --input-border: #2e3a59;
+            --card-bg: #121c2a;
+            --hover-bg: #1f355e;
+            --border-radius: 12px;
+        }
+
         body, html {
             height: 100%;
             margin: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f2f5;
+            background-color: #0d1b2a;
+            color: var(--text-light);
         }
 
         /* Sidebar */
@@ -21,322 +36,475 @@
             top: 0;
             left: 0;
             height: 100%;
-            width: 250px;
-            background-color: #0d1b2a; /* azul escuro */
-            color: #fff;
+            width: 280px;
+            background-color: var(--primary-color);
             display: flex;
             flex-direction: column;
-            padding: 1.5rem 1rem;
-            box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+            padding: 2rem 1.5rem;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.4);
             z-index: 1030;
+            overflow-y: auto;
         }
+
         .sidebar h2 {
             font-weight: 700;
             font-size: 1.8rem;
             margin-bottom: 2rem;
-            letter-spacing: 1.5px;
-            user-select: none;
-        }
-        .sidebar a.btn {
-            margin-bottom: 1rem;
-            font-weight: 600;
+            color: var(--text-light);
             text-align: center;
         }
-        .sidebar a.btn-outline-light {
-            color: #a8c0ff;
-            border-color: #a8c0ff;
-        }
-        .sidebar a.btn-outline-light:hover {
-            background-color: #a8c0ff;
-            color: #0d1b2a;
-        }
-        .sidebar button.btn-success {
-            background-color: #3ac569; /* verde */
-            border: none;
+
+        .sidebar .btn {
+            margin-bottom: 1rem;
             font-weight: 600;
-            transition: background-color 0.3s ease;
+            padding: 0.75rem;
+            border-radius: var(--border-radius);
+            transition: all 0.3s ease;
         }
-        .sidebar button.btn-success:hover {
+
+        .sidebar .btn-outline-light {
+            color: var(--text-light);
+            border-color: var(--text-light);
+        }
+
+        .sidebar .btn-outline-light:hover {
+            background-color: var(--text-light);
+            color: var(--primary-color);
+        }
+
+        .sidebar .btn-success {
+            background-color: var(--success-color);
+            border: none;
+        }
+
+        .sidebar .btn-success:hover {
             background-color: #2ea851;
+            transform: translateY(-2px);
+        }
+
+        .sidebar .btn-pdf {
+            background-color: #ff6b6b;
+            border: none;
+            color: white;
+        }
+
+        .sidebar .btn-pdf:hover {
+            background-color: #e05555;
+            transform: translateY(-2px);
         }
 
         /* Main content */
         .main-content {
-            margin-left: 250px;
-            padding: 2rem 2.5rem;
+            margin-left: 280px;
+            padding: 2.5rem 3rem;
             min-height: 100vh;
             overflow-x: hidden;
         }
 
         /* Header */
         .main-header {
-            margin-bottom: 2rem;
-            color: #0d1b2a;
+            margin-bottom: 2.5rem;
+            color: var(--text-light);
             font-weight: 700;
-            font-size: 2rem;
-            user-select: none;
-        }
-        .main-header span.session-name {
-            color: #3ac569; /* verde */
+            font-size: 2.2rem;
         }
 
-        /* Pesquisa */
-        #pesquisaItem {
-            max-width: 400px;
-            margin-bottom: 2rem;
-            border-radius: 0.375rem;
-            border: 1.5px solid #a8c0ff;
-            padding: 0.5rem 1rem;
-            font-size: 1rem;
-            transition: border-color 0.3s ease;
+        .main-header span.session-name {
+            color: var(--success-color);
+            background: linear-gradient(45deg, var(--success-color), #2ea851);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
+
+        /* Pesquisa Principal */
+        .search-container {
+            position: relative;
+            max-width: 500px;
+            margin-bottom: 2.5rem;
+        }
+
+        #pesquisaItem {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            border-radius: var(--border-radius);
+            border: 2px solid var(--input-border);
+            background-color: var(--input-bg);
+            color: var(--text-light);
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
         #pesquisaItem:focus {
             outline: none;
-            border-color: #3ac569;
-            box-shadow: 0 0 8px #3ac569aa;
+            border-color: var(--success-color);
+            box-shadow: 0 0 15px rgba(58, 197, 105, 0.4);
+            background-color: var(--hover-bg);
+        }
+
+        #pesquisaItem::placeholder {
+            color: var(--text-muted);
         }
 
         /* Cards container */
         .cards-container {
             display: grid;
-            grid-template-columns: repeat(auto-fill,minmax(320px,1fr));
-            gap: 1.5rem;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 2rem;
         }
 
         /* Card base */
         .card-item {
-            border-radius: 0.75rem;
-            box-shadow: 0 4px 15px rgb(0 0 0 / 0.1);
-            display: flex;
-            flex-direction: column;
-            background-color: #fff;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-        .card-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgb(0 0 0 / 0.15);
-        }
-        .card-header {
-            padding: 1.25rem 1.5rem;
-            border-radius: 0.75rem 0.75rem 0 0;
-            color: #fff;
-            font-weight: 700;
-            font-size: 1.25rem;
-            user-select: none;
-        }
-        .card-body {
-            padding: 1.5rem;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-        }
-        .card-quantity {
-            font-weight: 600;
-            color: #555;
-            margin-bottom: 1rem;
+            border-radius: var(--border-radius);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            background-color: var(--card-bg);
+            transition: all 0.3s ease;
+            overflow: hidden;
         }
 
-        /* Cores dos cards */
-        .card-blue {
-            background-color: #0d1b2a;
+        .card-item:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
         }
-        .card-green {
-            background-color: #3ac569;
+
+        .card-header {
+            padding: 1.5rem 2rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            color: var(--text-light);
+            font-weight: 700;
+            font-size: 1.3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        .card-red {
-            background-color: #e63946;
+
+        .btn-excluir {
+            background: none;
+            border: none;
+            color: var(--danger-color);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-excluir:hover {
+            background-color: rgba(230, 57, 70, 0.2);
+            transform: scale(1.1);
+        }
+
+        .card-body {
+            padding: 2rem;
+        }
+
+        .card-quantity {
+            font-weight: 600;
+            color: var(--success-color);
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+            padding: 0.5rem 1rem;
+            background-color: rgba(58, 197, 105, 0.1);
+            border-radius: var(--border-radius);
+            text-align: center;
+        }
+
+        /* Search within cards */
+        .card-search-container {
+            margin-bottom: 1.5rem;
+        }
+
+        .card-search {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border-radius: var(--border-radius);
+            border: 1.5px solid var(--input-border);
+            background-color: var(--input-bg);
+            color: var(--text-light);
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .card-search:focus {
+            outline: none;
+            border-color: var(--success-color);
+            background-color: var(--hover-bg);
+        }
+
+        .card-search::placeholder {
+            color: var(--text-muted);
         }
 
         /* Lista de retiradas */
         .retirada-list {
             list-style: none;
-            padding-left: 0;
-            margin-bottom: 1rem;
-            max-height: 140px;
+            padding: 0;
+            margin: 0 0 2rem 0;
+            max-height: 200px;
             overflow-y: auto;
-            border: 1px solid #ddd;
-            border-radius: 0.5rem;
-            padding: 0.75rem 1rem;
-            background-color: #fafafa;
-        }
-        .retirada-list li {
-            font-size: 0.9rem;
-            margin-bottom: 0.4rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .retirada-list li:last-child {
-            margin-bottom: 0;
-        }
-        .retirada-info {
-            flex-grow: 1;
-            color: #333;
-        }
-        .badge-quantidade {
-            background-color: #0d1b2a;
-            color: #fff;
-            font-weight: 600;
-            padding: 0.2rem 0.5rem;
-            border-radius: 0.375rem;
-            margin-left: 0.5rem;
+            border: 1px solid var(--input-border);
+            border-radius: var(--border-radius);
+            background-color: rgba(26, 42, 68, 0.3);
         }
 
-        /* Form retirar */
-        .form-retirar {
-            margin-top: auto;
+        .retirada-list::-webkit-scrollbar {
+            width: 8px;
         }
-        .form-retirar label {
-            font-weight: 600;
-            font-size: 0.9rem;
-            color: #0d1b2a;
+
+        .retirada-list::-webkit-scrollbar-thumb {
+            background-color: var(--success-color);
+            border-radius: 4px;
         }
-        .form-retirar select,
-        .form-retirar input[type=number] {
-            border-radius: 0.375rem;
-            border: 1.5px solid #a8c0ff;
-            padding: 0.3rem 0.5rem;
-            font-size: 0.9rem;
-            transition: border-color 0.3s ease;
+
+        .retirada-list::-webkit-scrollbar-track {
+            background-color: var(--input-bg);
         }
-        .form-retirar select:focus,
-        .form-retirar input[type=number]:focus {
-            outline: none;
-            border-color: #3ac569;
-            box-shadow: 0 0 6px #3ac569aa;
-        }
-        .form-retirar button {
-            margin-top: 0.75rem;
-            width: 100%;
-            font-weight: 700;
-            background-color: #0d1b2a;
-            border: none;
-            color: #fff;
-            padding: 0.5rem 0;
-            border-radius: 0.5rem;
+
+        .retirada-item, .cautelado-item {
+            padding: 1rem;
+            border-bottom: 1px solid var(--input-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             transition: background-color 0.3s ease;
         }
-        .form-retirar button:hover {
-            background-color: #07111a;
+
+        .retirada-item:hover, .cautelado-item:hover {
+            background-color: rgba(58, 197, 105, 0.1);
         }
 
-        /* Form remover retirada */
+        .retirada-item:last-child, .cautelado-item:last-child {
+            border-bottom: none;
+        }
+
+        .retirada-info {
+            flex-grow: 1;
+        }
+
+        .retirada-info strong {
+            color: var(--text-light);
+            display: block;
+            margin-bottom: 0.2rem;
+        }
+
+        .retirada-info small {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .badge-quantidade {
+            background-color: var(--success-color);
+            color: white;
+            font-weight: 600;
+            padding: 0.3rem 0.7rem;
+            border-radius: 20px;
+            margin-left: 0.5rem;
+            font-size: 0.85rem;
+        }
+
         .form-remover {
             display: flex;
             align-items: center;
-            gap: 0.4rem;
-            margin-left: 1rem;
+            gap: 0.5rem;
         }
-        .form-remover input[type=number] {
+
+        .form-remover input[type="number"] {
             width: 60px;
-            border-radius: 0.375rem;
-            border: 1.5px solid #e63946;
-            padding: 0.15rem 0.3rem;
-            font-size: 0.85rem;
-            color: #e63946;
-            font-weight: 600;
-            transition: border-color 0.3s ease;
+            padding: 0.3rem 0.5rem;
+            border: 1.5px solid var(--danger-color);
+            border-radius: 6px;
+            background-color: var(--input-bg);
+            color: var(--text-light);
+            text-align: center;
         }
-        .form-remover input[type=number]:focus {
+
+        .form-remover input[type="number"]:focus {
             outline: none;
             border-color: #a62834;
-            box-shadow: 0 0 6px #a62834aa;
         }
+
         .form-remover button {
-            background-color: #e63946;
+            background-color: var(--danger-color);
             border: none;
-            color: #fff;
-            font-size: 0.85rem;
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.375rem;
+            color: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
             cursor: pointer;
             transition: background-color 0.3s ease;
         }
+
         .form-remover button:hover {
             background-color: #a62834;
         }
 
-        /* Scrollbar customizada para retiradas */
-        .retirada-list::-webkit-scrollbar {
-            width: 6px;
-        }
-        .retirada-list::-webkit-scrollbar-thumb {
-            background-color: #3ac569aa;
-            border-radius: 3px;
-        }
-        .retirada-list::-webkit-scrollbar-track {
-            background-color: #f0f2f5;
+        /* Formulário de retirada */
+        .form-retirar {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--input-border);
         }
 
-        /* Modal custom */
-        .modal-header {
-            background-color: #0d1b2a;
-            color: #fff;
+        .form-retirar label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-light);
+        }
+
+        .form-retirar select,
+        .form-retirar input[type="number"] {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1.5px solid var(--input-border);
+            border-radius: var(--border-radius);
+            background-color: var(--input-bg);
+            color: var(--text-light);
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-retirar select:focus,
+        .form-retirar input[type="number"]:focus {
+            outline: none;
+            border-color: var(--success-color);
+            background-color: var(--hover-bg);
+        }
+
+        .form-retirar button {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            border: none;
+            color: var(--text-light);
             font-weight: 700;
-            border-bottom: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
-        .modal-footer {
-            border-top: none;
+
+        .form-retirar button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
+
+        /* Modal */
         .modal-content {
-            border-radius: 1rem;
-            overflow: hidden;
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            border: none;
         }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            color: var(--text-light);
+            border-bottom: 1px solid var(--input-border);
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
         .modal-body label {
             font-weight: 600;
-            color: #0d1b2a;
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+            display: block;
         }
+
         .modal-body input {
-            border-radius: 0.5rem;
-            border: 1.5px solid #a8c0ff;
-            padding: 0.5rem;
-            font-size: 1rem;
-            transition: border-color 0.3s ease;
+            width: 100%;
+            padding: 0.75rem;
+            border: 1.5px solid var(--input-border);
+            border-radius: var(--border-radius);
+            background-color: var(--input-bg);
+            color: var(--text-light);
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
         }
+
         .modal-body input:focus {
             outline: none;
-            border-color: #3ac569;
-            box-shadow: 0 0 8px #3ac569aa;
+            border-color: var(--success-color);
+            background-color: var(--hover-bg);
         }
-        .btn-success {
-            background-color: #3ac569;
-            border: none;
-            font-weight: 700;
-            transition: background-color 0.3s ease;
+
+        .modal-footer {
+            border-top: 1px solid var(--input-border);
+            padding: 1.5rem 2rem;
         }
-        .btn-success:hover {
-            background-color: #2ea851;
-        }
-        .btn-secondary {
+
+        .modal-footer .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius);
             font-weight: 600;
-            border-radius: 0.5rem;
         }
 
         /* Responsividade */
+        @media (max-width: 1024px) {
+            .cards-container {
+                grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            }
+        }
+
         @media (max-width: 768px) {
             .sidebar {
                 width: 100%;
                 height: auto;
                 position: relative;
-                flex-direction: row;
-                justify-content: space-between;
-                padding: 1rem 1.5rem;
-                box-shadow: none;
+                padding: 1.5rem;
             }
-            .sidebar h2 {
-                font-size: 1.3rem;
-                margin-bottom: 0;
-            }
+
             .main-content {
                 margin-left: 0;
-                padding: 1rem 1rem 2rem;
+                padding: 2rem 1.5rem;
             }
+
             .cards-container {
                 grid-template-columns: 1fr;
             }
-            .form-retirar button {
-                width: 100%;
+
+            .search-container {
+                max-width: 100%;
             }
+        }
+
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 1.5rem 1rem;
+            }
+
+            .card-body {
+                padding: 1.5rem;
+            }
+
+            .retirada-item, .cautelado-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+
+            .form-remover {
+                width: 100%;
+                justify-content: flex-end;
+            }
+        }
+
+        /* Animações */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card-item {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        .card-item:nth-child(even) {
+            animation-delay: 0.1s;
+        }
+
+        .card-item:nth-child(odd) {
+            animation-delay: 0.2s;
         }
     </style>
 </head>
@@ -345,95 +513,94 @@
     <!-- Sidebar -->
     <aside class="sidebar">
         <h2>Dashboard</h2>
-        <a href="{% url 'listar_sessoes' %}" class="btn btn-outline-light w-100 mb-3">← Voltar para Sessões</a>
-        <button class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#modalCadastrarItem">
+        <a href="{% url 'listar_sessoes' %}" class="btn btn-outline-light">
+            ← Voltar para Sessões
+        </a>
+        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalCadastrarItem">
             ➕ Adicionar Item
-        </button>   
-
-  <div class="mb-3 d-flex justify-content-end">
-    <a href="{% url 'gerar_relatorio_pdf' sessao.id %}" class="btn btn-success" target="_blank">
-        📝 Gerar Relatório PDF
-    </a>
-</div>
-        
-        <div class="mb-3">
-</div>
-
-
+        </button>
+        <a href="{% url 'gerar_relatorio_pdf' sessao.id %}" class="btn btn-pdf" target="_blank">
+            📝 Gerar Relatório PDF
+        </a>
     </aside>
-    
 
     <!-- Main content -->
     <main class="main-content">
-    <header class="main-header">
-        Itens da Sessão <span class="session-name">{{ sessao.nome }}</span>
-    </header>
+        <header class="main-header">
+            Itens da Sessão <span class="session-name">{{ sessao.nome }}</span>
+        </header>
 
-    <!-- Pesquisa -->
-    <input type="text" id="pesquisaItem" placeholder="Pesquisar item..." aria-label="Pesquisar item" />
-
-    <section class="cards-container" id="listaItens">
-        {% for item in itens %}
-        <article class="card-item" data-nome="{{ item.nome|lower }}">
-            <header class="card-header card-blue d-flex justify-content-between align-items-center">
-                {{ item.nome }}
-                <!-- Botão excluir dentro do header -->
-                <form action="{% url 'excluir_item' item.id %}" method="post" class="m-0">
-                    {% csrf_token %}
-                    <button type="submit" class="btn-excluir"
-                        onclick="return confirm('Tem certeza que deseja excluir este item?');">
-                        ✖
-                    </button>
-                </form>
-            </header>
-
-            <div class="card-body">
-                <div class="card-quantity">{{ item.quantidade }} cadastrados</div>
-
-                <h6>Retiradas:</h6>
-                <ul class="retirada-list">
-                    {% for retirada in item.retiradas.all %}
-                    <li>
-                        <div class="retirada-info">
-                            <strong>{{ retirada.usuario.nome }}</strong> retirou 
-                            <span class="badge-quantidade">{{ retirada.quantidade }}</span> em 
-                            <small>{{ retirada.data_retirada|date:"d/m/Y H:i" }}</small>
-                        </div>
-                        <form method="post" action="{% url 'remover_retirada' retirada.id %}?next={% url 'listar_itens' sessao.id %}" class="form-remover">
-                            {% csrf_token %}
-                            <input type="number" name="quantidade" min="1" max="{{ retirada.quantidade }}" value="{{ retirada.quantidade }}" required />
-                            <button type="submit" title="Remover retirada">✖</button>
-                        </form>
-                    </li>
-                    {% empty %}
-                    <li class="text-muted fst-italic">Ninguém retirou ainda</li>
-                    {% endfor %}
-                </ul>
-
-                <form method="post" action="{% url 'retirar_item' item.id %}" class="form-retirar">
-                    {% csrf_token %}
-                    <label for="usuario-{{ item.id }}">Quem pegou:</label>
-                    <select id="usuario-{{ item.id }}" name="usuario" required>
-                        {% for usuario in usuarios %}
-                        <option value="{{ usuario.id }}">{{ usuario.nome }} - {{ usuario.get_graduacao_display }}</option>
-                        {% endfor %}
-                    </select>
-
-                    <label for="quantidade-{{ item.id }}" class="mt-2">Quantidade:</label>
-                    <input id="quantidade-{{ item.id }}" type="number" name="quantidade" min="1" max="{{ item.quantidade }}" value="1" required />
-
-                    <button type="submit" class="mt-3">Registrar Retirada</button>
-                </form>
-            </div>
-        </article>
-        {% empty %}
-        <div class="alert alert-info w-100 text-center" role="alert">
-            Nenhum item cadastrado ainda.
+        <!-- Pesquisa principal -->
+        <div class="search-container">
+            <input type="text" id="pesquisaItem" placeholder="🔍 Pesquisar item pelo nome..." aria-label="Pesquisar item" />
         </div>
-        {% endfor %}
-    </section>
-</main>
 
+        <section class="cards-container" id="listaItens">
+            {% for item in itens %}
+            <article class="card-item" data-nome="{{ item.nome|lower }}">
+                <header class="card-header">
+                    <span>{{ item.nome }}</span>
+                    <form action="{% url 'excluir_item' item.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-excluir" onclick="return confirm('Tem certeza que deseja excluir este item?');">
+                            ✖
+                        </button>
+                    </form>
+                </header>
+
+                <div class="card-body">
+                    <div class="card-quantity">{{ item.quantidade }} unidades cadastradas</div>
+
+                    <!-- Pesquisa dentro do card - Quem Pegou -->
+                    <div class="card-search-container">
+                        <input type="search" id="search-pegou-{{ item.id }}" class="card-search" 
+                               placeholder="🔍 Pesquisar quem pegou..." oninput="filterRetiradas({{ item.id }}, 'pegou')" />
+                    </div>
+
+                    <h6>Retiradas:</h6>
+                    <ul class="retirada-list" id="list-pegou-{{ item.id }}">
+                        {% for retirada in item.retiradas.all %}
+                        <li class="retirada-item" data-usuario="{{ retirada.usuario.nome|lower }}">
+                            <div class="retirada-info">
+                                <strong>{{ retirada.usuario.nome }}</strong>
+                                <span class="badge-quantidade">{{ retirada.quantidade }}</span>
+                                <small>em {{ retirada.data_retirada|date:"d/m/Y H:i" }}</small>
+                            </div>
+                            <form method="post" action="{% url 'remover_retirada' retirada.id %}?next={% url 'listar_itens' sessao.id %}" class="form-remover">
+                                {% csrf_token %}
+                                <input type="number" name="quantidade" min="1" max="{{ retirada.quantidade }}" value="{{ retirada.quantidade }}" required />
+                                <button type="submit" title="Remover retirada">✖</button>
+                            </form>
+                        </li>
+                        {% empty %}
+                        <li class="retirada-item text-muted fst-italic">Ninguém retirou ainda</li>
+                        {% endfor %}
+                    </ul>
+
+
+                    <form method="post" action="{% url 'retirar_item' item.id %}" class="form-retirar">
+                        {% csrf_token %}
+                        <label for="usuario-{{ item.id }}">Quem pegou:</label>
+                        <select id="usuario-{{ item.id }}" name="usuario" required>
+                            {% for usuario in usuarios %}
+                            <option value="{{ usuario.id }}">{{ usuario.nome }} - {{ usuario.get_graduacao_display }}</option>
+                            {% endfor %}
+                        </select>
+
+                        <label for="quantidade-{{ item.id }}">Quantidade:</label>
+                        <input id="quantidade-{{ item.id }}" type="number" name="quantidade" min="1" max="{{ item.quantidade }}" value="1" required />
+
+                        <button type="submit">Registrar Retirada</button>
+                    </form>
+                </div>
+            </article>
+            {% empty %}
+            <div class="alert alert-info w-100 text-center" role="alert" style="background-color: var(--input-bg); color: var(--text-light); border: none;">
+                Nenhum item cadastrado ainda. Clique em "Adicionar Item" para começar.
+            </div>
+            {% endfor %}
+        </section>
+    </main>
 
     <!-- Modal para Cadastrar Item -->
     <div class="modal fade" id="modalCadastrarItem" tabindex="-1" aria-labelledby="modalCadastrarItemLabel" aria-hidden="true">
@@ -442,45 +609,83 @@
                 <form method="post" action="{% url 'adicionar_item' sessao.id %}">
                     {% csrf_token %}
                     <div class="modal-header">
-                        <h5 class="modal-title" id="modalCadastrarItemLabel">Cadastrar Novo Item</h5>
+                        <h5 class="modal-title">Cadastrar Novo Item</h5>
                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
                     </div>
                     <div class="modal-body">
+                        <label for="nomeItem">Nome do Item</label>
+                        <input type="text" id="nomeItem" name="nome" required />
                         
-                        <div class="mb-3">
-                            <label for="nomeItem" class="form-label">Nome do Item</label>
-                            <input type="text" id="nomeItem" name="nome" class="form-control" required />
-                        </div>
-                        <div class="mb-3">
-                            <label for="quantidadeItem" class="form-label">Quantidade</label>
-                            <input type="number" id="quantidadeItem" name="quantidade" class="form-control" min="1" required />
-                        </div>
+                        <label for="quantidadeItem">Quantidade</label>
+                        <input type="number" id="quantidadeItem" name="quantidade" min="1" required />
                     </div>
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-success">Salvar</button>
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Salvar</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 
-    <!-- Script de pesquisa -->
     <script>
+        // Pesquisa geral dos itens
         const inputPesquisa = document.getElementById("pesquisaItem");
         const listaItens = document.getElementById("listaItens");
 
         inputPesquisa.addEventListener("input", () => {
-            const filtro = inputPesquisa.value.toLowerCase();
+            const filtro = inputPesquisa.value.toLowerCase().trim();
             const cards = listaItens.querySelectorAll("article.card-item");
 
             cards.forEach(card => {
                 const nome = card.getAttribute("data-nome");
-                if (nome.includes(filtro)) {
+                if (filtro === "" || nome.includes(filtro)) {
                     card.style.display = "";
                 } else {
                     card.style.display = "none";
                 }
+            });
+        });
+
+        // Filtrar retiradas "Quem pegou"
+        function filterRetiradas(itemId, tipo) {
+            const input = document.getElementById(`search-pegou-${itemId}`);
+            const filtro = input.value.toLowerCase().trim();
+            const lista = document.getElementById(`list-pegou-${itemId}`);
+            const itens = lista.querySelectorAll(".retirada-item");
+
+            itens.forEach(li => {
+                const usuario = li.getAttribute("data-usuario");
+                if (filtro === "" || usuario.includes(filtro)) {
+                    li.style.display = "";
+                } else {
+                    li.style.display = "none";
+                }
+            });
+        }
+
+        // Filtrar cautelados "Quem está cautelado"
+        function filterCautelados(itemId) {
+            const input = document.getElementById(`search-cautelado-${itemId}`);
+            const filtro = input.value.toLowerCase().trim();
+            const lista = document.getElementById(`list-cautelado-${itemId}`);
+            const itens = lista.querySelectorAll(".cautelado-item");
+
+            itens.forEach(li => {
+                const usuario = li.getAttribute("data-usuario");
+                if (filtro === "" || usuario.includes(filtro)) {
+                    li.style.display = "";
+                } else {
+                    li.style.display = "none";
+                }
+            });
+        }
+
+        // Animar cards ao carregar
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.card-item');
+            cards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.1}s`;
             });
         });
     </script>
