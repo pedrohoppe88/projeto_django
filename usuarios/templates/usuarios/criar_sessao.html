@@ -1,26 +1,102 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
+    <meta charset="UTF-8">
     <title>Criar Nova Sessão</title>
+    <style>
+        body {
+            background-color: #0b1d33;
+            color: #e0f2f1;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: #102a43;
+            padding: 25px;
+            border-radius: 10px;
+            width: 320px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #34d399;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #1f3b57;
+            border-radius: 5px;
+            background-color: #1e3a5f;
+            color: #e0f2f1;
+        }
+
+        input:focus {
+            border-color: #34d399;
+            outline: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #34d399;
+            color: #0b1d33;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #2bb47d;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin-top: 15px;
+        }
+
+        li {
+            background-color: #1e3a5f;
+            padding: 8px;
+            border-radius: 5px;
+            margin-bottom: 5px;
+        }
+    </style>
 </head>
 <body>
-    <h2>Criar Nova Sessão</h2>
-    <form method="post">
-        {% csrf_token %}
-        <label>Nome da Sessão:</label>
-        <input type="text" name="nome" required><br><br>
+    <div class="container">
+        <h2>Criar Nova Sessão</h2>
+        <form method="post">
+            {% csrf_token %}
+            <label for="nome">Nome da Sessão:</label>
+            <input type="text" id="nome" name="nome" required>
 
-        <label>Senha da Sessão:</label>
-        <input type="password" name="senha" required><br><br>
+            <label for="senha">Senha da Sessão:</label>
+            <input type="password" id="senha" name="senha" required>
 
-        <button type="submit">Criar Sessão</button>
-    </form>
-    {% if messages %}
-        <ul>
-            {% for message in messages %}
-                <li>{{ message }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
+            <button type="submit">Criar Sessão</button>
+        </form>
+
+        {% if messages %}
+            <ul>
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
 </body>
 </html>

@@ -1,0 +1,25 @@
+{
+  "name": "projeto_django",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pedrohoppe88/projeto_django.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pedrohoppe88/projeto_django/issues"
+  },
+  "homepage": "https://github.com/pedrohoppe88/projeto_django#readme",
+  "description": "",
+  "devDependencies": {
+    "cypress": "^13.6.0"
+  }
+}

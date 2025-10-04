@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from .forms import UsuarioForm
 from .forms import UsuarioForm, LoginForm, SessaoForm
 from .models import Retirada, Usuario
-from django.contrib.auth.hashers import check_password
+from django.contrib.auth.hashers import check_password, make_password
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from .models import Sessao, Item
@@ -15,8 +15,10 @@ def cadastrar_usuario(request):
     if request.method == 'POST':
         form = UsuarioForm(request.POST)
         if form.is_valid():
-            # Aqui você poderia hash a senha se quiser
-            form.save()
+            # Hash a senha antes de salvar
+            usuario = form.save(commit=False)
+            usuario.senha = make_password(form.cleaned_data['senha'])
+            usuario.save()
             return redirect('login')
            # return redirect('sucesso')
     else:
@@ -31,7 +33,8 @@ def sucesso(request):
     usuario = Usuario.objects.get(id=usuario_id) if usuario_id else None
     nome = usuario.nome if usuario else None
     graduacao = usuario.graduacao if usuario else None
-    return render(request, 'usuarios/sucesso.html', {'usuario_id': usuario_id, 'graduacao': graduacao, 'nome': nome})
+    sessoes = Sessao.objects.all()
+    return render(request, 'usuarios/listar_sessoes.html', {'usuario_id': usuario_id, 'graduacao': graduacao, 'nome': nome, 'sessoes': sessoes})
 
 def login_usuario(request):
     if request.method == 'POST':
