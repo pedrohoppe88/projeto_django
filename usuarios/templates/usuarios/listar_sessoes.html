@@ -42,7 +42,9 @@
             {% endfor %}
         </div>
 
+        {% if usuario.is_admin %}
         <a class="btn btn-criar" href="{% url 'criar_sessao' %}">Criar nova sessão</a>
+        {% endif %}
 
     </main>
 

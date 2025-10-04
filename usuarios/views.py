@@ -71,6 +71,14 @@ def all_users(request):
         return redirect('login')
     usuarios = Usuario.objects.all()
     usuario_id = request.session.get('usuario_id')
+
+    usuario = Usuario.objects.get(id=usuario_id)
+
+    if not usuario.is_admin:
+        messages.error(request, "Acesso negado! Você não tem permissão para acessar o painel de administrador.")
+        return redirect('listar_sessoes')
+
+    
     try:
         user = Usuario.objects.get(id=usuario_id) if usuario_id else None
         nome = user.nome if user else None
@@ -208,8 +216,11 @@ def mostrar_sessao(request):
 def listar_sessoes(request):
     if 'usuario_id' not in request.session:
         return redirect('login')
+    usuario_id = request.session.get('usuario_id')
+    usuario = Usuario.objects.get(id=usuario_id)
     sessoes = Sessao.objects.all()
-    return render(request, 'usuarios/listar_sessoes.html', {'sessoes': sessoes})
+    usuario_admin = usuario.is_admin
+    return render(request, 'usuarios/listar_sessoes.html', {'sessoes': sessoes, 'usuario': usuario, 'usuario_admin': usuario_admin})
 
 def listar_itens(request, sessao_id):
     sessao = get_object_or_404(Sessao, id=sessao_id)
@@ -375,7 +386,11 @@ def edit_user(request, user_id):
         if form.is_valid():
             form.save()
             messages.success(request, "Usuário atualizado com sucesso!")
-            return redirect('all_users')
+            next_page = request.GET.get('next')
+            if next_page == 'admin_panel':
+                return redirect('admin_panel')
+            else:
+                return redirect('all_users')
     else:
         form = UsuarioForm(instance=usuario)
 
@@ -390,6 +405,41 @@ def delete_user(request, user_id):
     if request.method == 'POST':
         usuario.delete()
         messages.success(request, "Usuário excluído com sucesso!")
-        return redirect('all_users')
+        next_page = request.GET.get('next')
+        if next_page == 'admin_panel':
+            return redirect('admin_panel')
+        else:
+            return redirect('all_users')
 
     return render(request, 'usuarios/confirmar_exclusao_usuario.html', {'usuario': usuario})
+
+def admin_panel(request):
+    if 'usuario_id' not in request.session:
+        return redirect('login')
+
+    usuario_id = request.session.get('usuario_id')
+    usuario = Usuario.objects.get(id=usuario_id)
+
+    if not usuario.is_admin:
+        messages.error(request, "Acesso negado! Você não tem permissão para acessar o painel de administrador.")
+        return redirect('listar_sessoes')
+
+    total_usuarios = Usuario.objects.count()
+    total_sessoes = Sessao.objects.count()
+    total_itens = Item.objects.count()
+    total_retiradas = Retirada.objects.count()
+
+    usuarios = Usuario.objects.all()
+    sessoes = Sessao.objects.all()
+
+    context = {
+        'usuario': usuario,
+        'total_usuarios': total_usuarios,
+        'total_sessoes': total_sessoes,
+        'total_itens': total_itens,
+        'total_retiradas': total_retiradas,
+        'usuarios': usuarios,
+        'sessoes': sessoes,
+    }
+
+    return render(request, 'usuarios/admin_panel.html', context)

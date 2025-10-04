@@ -19,6 +19,7 @@ class Usuario(models.Model):
     email = models.EmailField(unique=True)
     senha = models.CharField(max_length=128)  # Em produção use hashing!
     graduacao = models.CharField(max_length=20, choices=GRADUACAO_CHOICES)
+    is_admin = models.BooleanField(default=False)  # Permissão para acessar painel admin
 
     def __str__(self):
         return f"{self.nome} - {self.get_graduacao_display()}"

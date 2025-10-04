@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel de Administrador</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'style/all_users.css' %}">
+</head>
+<body class="bg-gray-100 min-h-screen">
+
+  <!-- Header -->
+  <header class="bg-white shadow-md">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+      <h1 class="text-2xl font-bold text-gray-800">Painel de Administrador</h1>
+      <div class="flex items-center space-x-4">
+        <p>Bem-vindo, {{ usuario.graduacao }} {{ usuario.nome }}!</p>
+        <a href="{% url 'listar_sessoes' %}" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium shadow">
+          Voltar
+        </a>
+        <a href="{% url 'logout' %}" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium shadow">
+          Sair
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Estatísticas -->
+  <section class="max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 md:grid-cols-4 gap-6">
+    <div class="stats-card bg-white p-6 rounded-xl shadow-md">
+      <h2 class="text-sm text-gray-500">Total de Usuários</h2>
+      <p class="text-2xl font-bold text-blue-600">{{ total_usuarios }}</p>
+    </div>
+    <div class="stats-card bg-white p-6 rounded-xl shadow-md">
+      <h2 class="text-sm text-gray-500">Total de Sessões</h2>
+      <p class="text-2xl font-bold text-green-600">{{ total_sessoes }}</p>
+    </div>
+    <div class="stats-card bg-white p-6 rounded-xl shadow-md">
+      <h2 class="text-sm text-gray-500">Total de Itens</h2>
+      <p class="text-2xl font-bold text-purple-600">{{ total_itens }}</p>
+    </div>
+    <div class="stats-card bg-white p-6 rounded-xl shadow-md">
+      <h2 class="text-sm text-gray-500">Total de Retiradas</h2>
+      <p class="text-2xl font-bold text-red-600">{{ total_retiradas }}</p>
+    </div>
+  </section>
+
+  <!-- Ações Administrativas -->
+  <section class="max-w-7xl mx-auto px-6 pb-10">
+    <div class="bg-white shadow-md rounded-xl overflow-hidden">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h2 class="text-lg font-semibold text-gray-800">Ações Administrativas</h2>
+      </div>
+      <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <a href="{% url 'all_users' %}" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-3 rounded-lg text-center font-medium shadow">
+          Gerenciar Usuários
+        </a>
+        <a href="{% url 'listar_sessoes' %}" class="bg-green-500 hover:bg-green-600 text-white px-4 py-3 rounded-lg text-center font-medium shadow">
+          Gerenciar Sessões
+        </a>
+        <a href="{% url 'cadastrar_usuario' %}" class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-3 rounded-lg text-center font-medium shadow">
+          Adicionar Usuário
+        </a>
+        <!-- Adicione mais ações conforme necessário -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Resumo de Usuários -->
+  <section class="max-w-7xl mx-auto px-6 pb-10">
+    <div class="bg-white shadow-md rounded-xl overflow-hidden">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h2 class="text-lg font-semibold text-gray-800">Resumo de Usuários</h2>
+      </div>
+      <div class="responsive-table scrollbar-hide">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nome</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Graduação</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Admin</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            {% for usuario in usuarios %}
+            <tr class="hover:bg-gray-50 transition duration-150">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ usuario.id }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ usuario.nome }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ usuario.email }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ usuario.get_graduacao_display }}</td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                  {% if usuario.is_admin %}bg-green-100 text-green-800{% else %}bg-gray-100 text-gray-800{% endif %}">
+                  {% if usuario.is_admin %}Sim{% else %}Não{% endif %}
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                <a href="{% url 'edit_user' user_id=usuario.id %}?next=admin_panel" class="text-indigo-600 hover:text-indigo-900 mr-2">Editar</a>
+                <a href="{% url 'delete_user' user_id=usuario.id %}?next=admin_panel" class="text-red-600 hover:text-red-900">Excluir</a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+</body>
+</html>

@@ -17,6 +17,6 @@ urlpatterns = [
     path('retirada/<int:retirada_id>/remover/', views.remover_retirada, name='remover_retirada'),
     path('sessao/<int:sessao_id>/itens/relatorio/pdf/', views.gerar_relatorio_pdf, name='gerar_relatorio_pdf'),
     path('item/<int:item_id>/excluir/', views.excluir_item, name='excluir_item'),
-
+    path('admin_panel/', views.admin_panel, name='admin_panel'),
 
 ]
