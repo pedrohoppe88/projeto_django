@@ -4,14 +4,99 @@
     <meta charset="UTF-8">
     <title>Relatório de Cautelas - {{ sessao.nome }}</title>
     <style>
-        body { font-family: Arial, sans-serif; font-size: 12px; margin: 20px; }
-        h1 { text-align: center; color: #0d1b2a; }
-        h2 { color: #3ac569; margin-top: 30px; border-bottom: 1px solid #3ac569; padding-bottom: 5px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { border: 1px solid #0d1b2a; padding: 8px; text-align: left; }
-        th { background-color: #3ac569; color: #fff; }
-        tr:nth-child(even) { background-color: #f0f0f0; }
-        .no-retirada { font-style: italic; color: #555; text-align: center; }
+        /* Reset básico */
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 14px;
+            margin: 30px 40px;
+            color: #333;
+            background-color: #fafafa;
+        }
+
+        h1 {
+            text-align: center;
+            color: #1b263b;
+            font-weight: 700;
+            font-size: 28px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        h2 {
+            color: #2a9d8f;
+            margin-top: 40px;
+            margin-bottom: 15px;
+            border-bottom: 3px solid #2a9d8f;
+            padding-bottom: 6px;
+            font-weight: 600;
+            font-size: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            background-color: #fff;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        thead tr {
+            background-color: #2a9d8f;
+            color: #fff;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        tbody tr:hover {
+            background-color: #e0f2f1;
+            transition: background-color 0.3s ease;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .no-retirada {
+            font-style: italic;
+            color: #777;
+            text-align: center;
+            margin: 20px 0;
+            font-size: 15px;
+        }
+
+        /* Responsividade para PDF em telas pequenas */
+        @media print, screen and (max-width: 600px) {
+            body {
+                margin: 15px 10px;
+                font-size: 12px;
+            }
+
+            h1 {
+                font-size: 22px;
+            }
+
+            h2 {
+                font-size: 16px;
+                margin-top: 25px;
+            }
+
+            th, td {
+                padding: 8px 10px;
+            }
+        }
     </style>
 </head>
 <body>
