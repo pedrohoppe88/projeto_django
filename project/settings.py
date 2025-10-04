@@ -11,21 +11,23 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 """
 
-import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [BASE_DIR / "static"]
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-ty=+t(_nt53nm@g3^sr@=f=p3&hmxn!ujrm7fxbnap9@c4)h&r')
+SECRET_KEY = 'django-insecure-ty=+t(_nt53nm@g3^sr@=f=p3&hmxn!ujrm7fxbnap9@c4)h&r'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', 'False') == 'True'
+DEBUG = True
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -37,7 +39,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'whitenoise',
     'usuarios'
 ]
 
@@ -45,7 +46,6 @@ LOGIN_URL = '/usuarios/login/'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
