@@ -1,7 +1,4 @@
-// Arquivo de suporte do Cypress
-// Aqui você pode adicionar comandos customizados ou configurações globais
 
-// Exemplo: Comando customizado para login
 Cypress.Commands.add('login', (email, password) => {
   cy.visit('/usuarios/login/')
   cy.get('input[name="email"]').type(email)
