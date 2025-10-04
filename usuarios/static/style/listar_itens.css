@@ -342,7 +342,8 @@
         }
 
         .form-retirar select,
-        .form-retirar input[type="number"] {
+        .form-retirar input[type="number"],
+        .form-retirar input[type="text"] {
             width: 100%;
             padding: 0.75rem;
             border: 1.5px solid var(--input-border);
@@ -354,10 +355,15 @@
         }
 
         .form-retirar select:focus,
-        .form-retirar input[type="number"]:focus {
+        .form-retirar input[type="number"]:focus,
+        .form-retirar input[type="text"]:focus {
             outline: none;
             border-color: var(--success-color);
             background-color: var(--hover-bg);
+        }
+
+        .form-retirar input[type="text"]::placeholder {
+            color: var(--text-muted);
         }
 
         .form-retirar button {

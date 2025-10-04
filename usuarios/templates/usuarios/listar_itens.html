@@ -82,11 +82,12 @@
                     <form method="post" action="{% url 'retirar_item' item.id %}" class="form-retirar">
                         {% csrf_token %}
                         <label for="usuario-{{ item.id }}">Quem pegou:</label>
-                        <select id="usuario-{{ item.id }}" name="usuario" required>
+                        <input type="text" id="usuario-{{ item.id }}" name="usuario" list="usuarios-{{ item.id }}" placeholder="🔍 Pesquisar usuário..." required autocomplete="off" class="card-search" />
+                        <datalist id="usuarios-{{ item.id }}">
                             {% for usuario in usuarios %}
                             <option value="{{ usuario.id }}">{{ usuario.nome }} - {{ usuario.get_graduacao_display }}</option>
                             {% endfor %}
-                        </select>
+                        </datalist>
 
                         <label for="quantidade-{{ item.id }}">Quantidade:</label>
                         <input id="quantidade-{{ item.id }}" type="number" name="quantidade" min="1" max="{{ item.quantidade }}" value="1" required />
@@ -154,23 +155,6 @@
             const filtro = input.value.toLowerCase().trim();
             const lista = document.getElementById(`list-pegou-${itemId}`);
             const itens = lista.querySelectorAll(".retirada-item");
-
-            itens.forEach(li => {
-                const usuario = li.getAttribute("data-usuario");
-                if (filtro === "" || usuario.includes(filtro)) {
-                    li.style.display = "";
-                } else {
-                    li.style.display = "none";
-                }
-            });
-        }
-
-        // Filtrar cautelados "Quem está cautelado"
-        function filterCautelados(itemId) {
-            const input = document.getElementById(`search-cautelado-${itemId}`);
-            const filtro = input.value.toLowerCase().trim();
-            const lista = document.getElementById(`list-cautelado-${itemId}`);
-            const itens = lista.querySelectorAll(".cautelado-item");
 
             itens.forEach(li => {
                 const usuario = li.getAttribute("data-usuario");

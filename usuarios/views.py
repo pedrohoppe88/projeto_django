@@ -294,7 +294,9 @@ def retirar_item(request, item_id):
     item = get_object_or_404(Item, id=item_id)
 
     if request.method == "POST":
-        usuario_id = request.POST.get("usuario")
+        usuario_value = request.POST.get("usuario")
+        # Parse the value: "id - name - graduation"
+        usuario_id = usuario_value.split(" - ")[0] if " - " in usuario_value else usuario_value
         quantidade = int(request.POST.get("quantidade", 1))
 
         usuario = get_object_or_404(Usuario, id=usuario_id)
