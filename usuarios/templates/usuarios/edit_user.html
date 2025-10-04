@@ -1,16 +1,15 @@
-{% load static %}
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Cadastro de Usuário</title>
+  <title>Editar Usuário</title>
+  {% load static %}
   <link rel="stylesheet" href="{% static 'style/cadastrar.css' %}">
-
 </head>
 <body>
-  <div class="container" role="main" aria-labelledby="cadastro-title">
-    <h1 id="cadastro-title">Cadastro de Usuário</h1>
+  <div class="container" role="main" aria-labelledby="editar-title">
+    <h1 id="editar-title">Editar Usuário</h1>
 
     <form method="post" novalidate>
       {% csrf_token %}
@@ -18,12 +17,11 @@
         {{ form.as_p }}
       </div>
 
-      <button type="submit" aria-label="Cadastrar usuário">Cadastrar</button>
+      <button type="submit" aria-label="Salvar alterações">Salvar</button>
     </form>
 
     <p class="login-link">
-      Já tem uma conta? 
-      <a href="{% url 'login' %}">Entrar</a>
+      <a href="{% url 'all_users' %}">Voltar à lista</a>
     </p>
 
     {% if form.errors %}

@@ -1,0 +1,506 @@
+ :root {
+            --primary-color: #0d1b2a;
+            --primary-light: #1b263b;
+            --success-color: #3ac569;
+            --danger-color: #e63946;
+            --text-light: #cfd8dc;
+            --text-muted: #a0aebf;
+            --input-bg: #1a2a44;
+            --input-border: #2e3a59;
+            --card-bg: #121c2a;
+            --hover-bg: #1f355e;
+            --border-radius: 12px;
+        }
+
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0d1b2a;
+            color: var(--text-light);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 280px;
+            background-color: var(--primary-color);
+            display: flex;
+            flex-direction: column;
+            padding: 2rem 1.5rem;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.4);
+            z-index: 1030;
+            overflow-y: auto;
+        }
+
+        .sidebar h2 {
+            font-weight: 700;
+            font-size: 1.8rem;
+            margin-bottom: 2rem;
+            color: var(--text-light);
+            text-align: center;
+        }
+
+        .sidebar .btn {
+            margin-bottom: 1rem;
+            font-weight: 600;
+            padding: 0.75rem;
+            border-radius: var(--border-radius);
+            transition: all 0.3s ease;
+        }
+
+        .sidebar .btn-outline-light {
+            color: var(--text-light);
+            border-color: var(--text-light);
+        }
+
+        .sidebar .btn-outline-light:hover {
+            background-color: var(--text-light);
+            color: var(--primary-color);
+        }
+
+        .sidebar .btn-success {
+            background-color: var(--success-color);
+            border: none;
+        }
+
+        .sidebar .btn-success:hover {
+            background-color: #2ea851;
+            transform: translateY(-2px);
+        }
+
+        .sidebar .btn-pdf {
+            background-color: #ff6b6b;
+            border: none;
+            color: white;
+        }
+
+        .sidebar .btn-pdf:hover {
+            background-color: #e05555;
+            transform: translateY(-2px);
+        }
+
+        /* Main content */
+        .main-content {
+            margin-left: 280px;
+            padding: 2.5rem 3rem;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        .main-header {
+            margin-bottom: 2.5rem;
+            color: var(--text-light);
+            font-weight: 700;
+            font-size: 2.2rem;
+        }
+
+        .main-header span.session-name {
+            color: var(--success-color);
+            background: linear-gradient(45deg, var(--success-color), #2ea851);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Pesquisa Principal */
+        .search-container {
+            position: relative;
+            max-width: 500px;
+            margin-bottom: 2.5rem;
+        }
+
+        #pesquisaItem {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            border-radius: var(--border-radius);
+            border: 2px solid var(--input-border);
+            background-color: var(--input-bg);
+            color: var(--text-light);
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        #pesquisaItem:focus {
+            outline: none;
+            border-color: var(--success-color);
+            box-shadow: 0 0 15px rgba(58, 197, 105, 0.4);
+            background-color: var(--hover-bg);
+        }
+
+        #pesquisaItem::placeholder {
+            color: var(--text-muted);
+        }
+
+        /* Cards container */
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 2rem;
+        }
+
+        /* Card base */
+        .card-item {
+            border-radius: var(--border-radius);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            background-color: var(--card-bg);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .card-item:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+        }
+
+        .card-header {
+            padding: 1.5rem 2rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            color: var(--text-light);
+            font-weight: 700;
+            font-size: 1.3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-excluir {
+            background: none;
+            border: none;
+            color: var(--danger-color);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-excluir:hover {
+            background-color: rgba(230, 57, 70, 0.2);
+            transform: scale(1.1);
+        }
+
+        .card-body {
+            padding: 2rem;
+        }
+
+        .card-quantity {
+            font-weight: 600;
+            color: var(--success-color);
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+            padding: 0.5rem 1rem;
+            background-color: rgba(58, 197, 105, 0.1);
+            border-radius: var(--border-radius);
+            text-align: center;
+        }
+
+        /* Search within cards */
+        .card-search-container {
+            margin-bottom: 1.5rem;
+        }
+
+        .card-search {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border-radius: var(--border-radius);
+            border: 1.5px solid var(--input-border);
+            background-color: var(--input-bg);
+            color: var(--text-light);
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .card-search:focus {
+            outline: none;
+            border-color: var(--success-color);
+            background-color: var(--hover-bg);
+        }
+
+        .card-search::placeholder {
+            color: var(--text-muted);
+        }
+
+        /* Lista de retiradas */
+        .retirada-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 2rem 0;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid var(--input-border);
+            border-radius: var(--border-radius);
+            background-color: rgba(26, 42, 68, 0.3);
+        }
+
+        .retirada-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .retirada-list::-webkit-scrollbar-thumb {
+            background-color: var(--success-color);
+            border-radius: 4px;
+        }
+
+        .retirada-list::-webkit-scrollbar-track {
+            background-color: var(--input-bg);
+        }
+
+        .retirada-item, .cautelado-item {
+            padding: 1rem;
+            border-bottom: 1px solid var(--input-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.3s ease;
+        }
+
+        .retirada-item:hover, .cautelado-item:hover {
+            background-color: rgba(58, 197, 105, 0.1);
+        }
+
+        .retirada-item:last-child, .cautelado-item:last-child {
+            border-bottom: none;
+        }
+
+        .retirada-info {
+            flex-grow: 1;
+        }
+
+        .retirada-info strong {
+            color: var(--text-light);
+            display: block;
+            margin-bottom: 0.2rem;
+        }
+
+        .retirada-info small {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .badge-quantidade {
+            background-color: var(--success-color);
+            color: white;
+            font-weight: 600;
+            padding: 0.3rem 0.7rem;
+            border-radius: 20px;
+            margin-left: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        .form-remover {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-remover input[type="number"] {
+            width: 60px;
+            padding: 0.3rem 0.5rem;
+            border: 1.5px solid var(--danger-color);
+            border-radius: 6px;
+            background-color: var(--input-bg);
+            color: var(--text-light);
+            text-align: center;
+        }
+
+        .form-remover input[type="number"]:focus {
+            outline: none;
+            border-color: #a62834;
+        }
+
+        .form-remover button {
+            background-color: var(--danger-color);
+            border: none;
+            color: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .form-remover button:hover {
+            background-color: #a62834;
+        }
+
+        /* Formulário de retirada */
+        .form-retirar {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--input-border);
+        }
+
+        .form-retirar label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-light);
+        }
+
+        .form-retirar select,
+        .form-retirar input[type="number"] {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1.5px solid var(--input-border);
+            border-radius: var(--border-radius);
+            background-color: var(--input-bg);
+            color: var(--text-light);
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-retirar select:focus,
+        .form-retirar input[type="number"]:focus {
+            outline: none;
+            border-color: var(--success-color);
+            background-color: var(--hover-bg);
+        }
+
+        .form-retirar button {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            border: none;
+            color: var(--text-light);
+            font-weight: 700;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .form-retirar button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Modal */
+        .modal-content {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            border: none;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            color: var(--text-light);
+            border-bottom: 1px solid var(--input-border);
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .modal-body label {
+            font-weight: 600;
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .modal-body input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1.5px solid var(--input-border);
+            border-radius: var(--border-radius);
+            background-color: var(--input-bg);
+            color: var(--text-light);
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .modal-body input:focus {
+            outline: none;
+            border-color: var(--success-color);
+            background-color: var(--hover-bg);
+        }
+
+        .modal-footer {
+            border-top: 1px solid var(--input-border);
+            padding: 1.5rem 2rem;
+        }
+
+        .modal-footer .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+        }
+
+        /* Responsividade */
+        @media (max-width: 1024px) {
+            .cards-container {
+                grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                padding: 1.5rem;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 2rem 1.5rem;
+            }
+
+            .cards-container {
+                grid-template-columns: 1fr;
+            }
+
+            .search-container {
+                max-width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 1.5rem 1rem;
+            }
+
+            .card-body {
+                padding: 1.5rem;
+            }
+
+            .retirada-item, .cautelado-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+
+            .form-remover {
+                width: 100%;
+                justify-content: flex-end;
+            }
+        }
+
+        /* Animações */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card-item {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        .card-item:nth-child(even) {
+            animation-delay: 0.1s;
+        }
+
+        .card-item:nth-child(odd) {
+            animation-delay: 0.2s;
+        }
+
+        .retirada-item {
+            color: white;
+        }
+
+        #retirada-item {
+            color: white;
+        }

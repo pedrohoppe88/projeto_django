@@ -68,9 +68,13 @@ def all_users(request):
         return redirect('login')
     usuarios = Usuario.objects.all()
     usuario_id = request.session.get('usuario_id')
-    user = Usuario.objects.get(id=usuario_id) if usuario_id else None
-    nome = user.nome if user else None
-    graduacao = user.graduacao if user else None
+    try:
+        user = Usuario.objects.get(id=usuario_id) if usuario_id else None
+        nome = user.nome if user else None
+        graduacao = user.graduacao if user else None
+    except Usuario.DoesNotExist:
+        request.session.flush()
+        return redirect('login')
     quant_id = Usuario.objects.count()
     return render(request, 'usuarios/all_users.html', {
         'usuarios': usuarios,
@@ -356,3 +360,33 @@ def excluir_item(request, item_id):
         item.delete()
         return redirect("listar_itens", sessao_id=sessao_id)  # Redireciona usando o ID salvo
     return render(request, "usuarios/confirmar_exclusao.html", {"item": item})
+
+def edit_user(request, user_id):
+    if 'usuario_id' not in request.session:
+        return redirect('login')
+
+    usuario = get_object_or_404(Usuario, id=user_id)
+
+    if request.method == 'POST':
+        form = UsuarioForm(request.POST, instance=usuario)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Usuário atualizado com sucesso!")
+            return redirect('all_users')
+    else:
+        form = UsuarioForm(instance=usuario)
+
+    return render(request, 'usuarios/edit_user.html', {'form': form, 'usuario': usuario})
+
+def delete_user(request, user_id):
+    if 'usuario_id' not in request.session:
+        return redirect('login')
+
+    usuario = get_object_or_404(Usuario, id=user_id)
+
+    if request.method == 'POST':
+        usuario.delete()
+        messages.success(request, "Usuário excluído com sucesso!")
+        return redirect('all_users')
+
+    return render(request, 'usuarios/confirmar_exclusao_usuario.html', {'usuario': usuario})

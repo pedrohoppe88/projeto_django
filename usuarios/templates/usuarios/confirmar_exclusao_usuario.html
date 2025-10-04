@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Confirmar Exclusão</title>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'style/cadastrar.css' %}">
+</head>
+<body>
+  <div class="container" role="main" aria-labelledby="excluir-title">
+    <h1 id="excluir-title">Confirmar Exclusão</h1>
+
+    <p>Tem certeza que deseja excluir o usuário "{{ usuario.nome }}"?</p>
+
+    <form method="post">
+      {% csrf_token %}
+      <button type="submit" class="btn-danger" aria-label="Confirmar exclusão">Sim, excluir</button>
+      <a href="{% url 'all_users' %}" class="btn-secondary">Cancelar</a>
+    </form>
+  </div>
+</body>
+</html>

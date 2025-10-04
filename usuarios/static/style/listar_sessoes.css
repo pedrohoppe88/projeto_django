@@ -1,0 +1,116 @@
+body {
+            background-color: #f0f2f5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .navbar-custom {
+            background-color: #0d1b2a;
+            color: #fff;
+            padding: 1rem 2rem;
+            font-weight: 700;
+            font-size: 1.5rem;
+            user-select: none;
+            box-shadow: 0 2px 8px rgb(0 0 0 / 0.15);
+        }
+        main.container {
+            flex: 1;
+            max-width: 900px;
+            margin: 2rem auto 3rem;
+            width: 100%;
+        }
+        h1 {
+            color: #0d1b2a;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            user-select: none;
+        }
+        .card-sessao {
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 12px rgb(0 0 0 / 0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            background-color: #fff;
+        }
+        .card-sessao:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgb(0 0 0 / 0.15);
+        }
+        .card-body {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+        }
+        .sessao-nome {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #0d1b2a;
+            user-select: text;
+        }
+        .sessao-data {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-left: 0.5rem;
+            user-select: text;
+        }
+        .btn-entrar {
+            min-width: 90px;
+        }
+        .btn-criar {
+            display: block;
+            margin: 2rem auto 0;
+            max-width: 220px;
+            font-weight: 600;
+            border-radius: 0.5rem;
+            padding: 0.5rem 1rem;
+            background-color: #3ac569;
+            border: none;
+            color: #fff;
+            transition: background-color 0.3s ease;
+        }
+        .btn-criar:hover {
+            background-color: #2ea851;
+        }
+        /* Modal custom */
+        .modal-header {
+            background-color: #0d1b2a;
+            color: #fff;
+            font-weight: 700;
+            border-bottom: none;
+        }
+        .modal-footer {
+            border-top: none;
+        }
+        .modal-content {
+            border-radius: 1rem;
+            overflow: hidden;
+        }
+        .modal-body label {
+            font-weight: 600;
+            color: #0d1b2a;
+        }
+        .modal-body input {
+            border-radius: 0.5rem;
+            border: 1.5px solid #a8c0ff;
+            padding: 0.5rem;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        .modal-body input:focus {
+            outline: none;
+            border-color: #3ac569;
+            box-shadow: 0 0 8px #3ac569aa;
+        }
+        .btn-success {
+            background-color: #3ac569;
+            border: none;
+            font-weight: 700;
+            transition: background-color 0.3s ease;
+        }
+        .btn-success:hover {
+            background-color: #2ea851;
+        }
+        .alert-danger {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }

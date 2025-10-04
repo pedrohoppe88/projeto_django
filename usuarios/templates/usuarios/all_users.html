@@ -5,27 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard de Usuários</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    .user-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-    }
-    .stats-card {
-      transition: all 0.3s ease;
-    }
-    .stats-card:hover {
-      transform: scale(1.03);
-    }
-    @media (max-width: 768px) {
-      .responsive-table {
-        display: block;
-        overflow-x: auto;
-      }
-    }
-    .scrollbar-hide::-webkit-scrollbar {
-      display: none;
-    }
-  </style>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'style/all_users.css' %}">
 </head>
 <body class="bg-gray-100 min-h-screen">
 
@@ -74,7 +55,7 @@
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Graduação</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-              <th class="px-6 py-3"></th>
+              <th class="px-6 py-3">Ações</th>
             </tr>
           </thead>
 
@@ -87,8 +68,8 @@
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="flex items-center">
                   <div class="flex-shrink-0 h-10 w-10">
-                    <img src="{{ usuario.foto_url|default:'https://via.placeholder.com/40' }}" 
-                         alt="Foto de perfil" 
+                    <img src="{{ usuario.foto_url|default:'https://via.placeholder.com/40' }}"
+                         alt="Foto de perfil"
                          class="h-10 w-10 rounded-full border border-gray-200">
                   </div>
                   <div class="ml-4">
@@ -99,7 +80,7 @@
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ usuario.email }}</td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
                   {% if usuario.graduacao == 'Iniciante' %}bg-blue-100 text-blue-800
                   {% elif usuario.graduacao == 'Intermediário' %}bg-yellow-100 text-yellow-800
                   {% elif usuario.graduacao == 'Avançado' %}bg-green-100 text-green-800
@@ -108,14 +89,15 @@
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
                   {% if usuario.status == 'ativo' %}bg-green-100 text-green-800
                   {% else %}bg-red-100 text-red-800{% endif %}">
                   {{ usuario.status|title }}
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                <a href="{%}" class="text-blue-600 hover:text-blue-900">Editar</a>
+                <a href="{% url 'edit_user' user_id=usuario.id %}" class="text-blue-600 hover:text-blue-900 mr-4">Editar</a>
+                <a href="{% url 'delete_user' user_id=usuario.id %}" class="text-red-600 hover:text-red-900" onclick="return confirm('Tem certeza que deseja excluir este usuário?')">Excluir</a>
               </td>
             </tr>
             {% empty %}
