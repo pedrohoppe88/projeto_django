@@ -274,8 +274,7 @@ def validar_sessao(request, sessao_id):
         sessao = get_object_or_404(Sessao, id=sessao_id)
         senha = request.POST.get("senha")
 
-        if senha == sessao.senha:  # ⚠️ use hash em produção
-            # salva login na sessão do usuário
+        if senha == sessao.senha: 
             request.session[f"sessao_{sessao.id}"] = True  
 
             return JsonResponse({
