@@ -202,7 +202,7 @@
                             if (data.retirada_deleted) {
                                 form.closest('.retirada-item').remove();
                             } else {
-                                const badge = form.previousElementSibling;
+                                const badge = form.previousElementSibling.querySelector('.badge-quantidade');
                                 badge.textContent = data.new_retirada_quantity;
                                 const input = form.querySelector('input[name="quantidade"]');
                                 input.max = data.new_retirada_quantity;
@@ -248,24 +248,38 @@
                             const quantityElement = itemCard.querySelector('.card-quantity');
                             quantityElement.textContent = `${data.new_quantity} unidades cadastradas`;
 
-                            // Add new retirada to the list
+                            // Check if retirada for this user already exists
                             const retiradaList = itemCard.querySelector('.retirada-list');
-                            const newLi = document.createElement('li');
-                            newLi.className = 'retirada-item';
-                            newLi.setAttribute('data-usuario', data.retirada.usuario.nome.toLowerCase());
-                            newLi.innerHTML = `
-                                <div class="retirada-info">
-                                    <strong>${data.retirada.usuario.nome}</strong>
-                                    <span class="badge-quantidade">${data.retirada.quantidade}</span>
-                                    <small>em ${new Date().toLocaleDateString('pt-BR')} ${new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}</small>
-                                </div>
-                                <form method="post" action="/usuarios/retirada/${data.retirada.id}/remover/?next=/sessoes/${data.retirada.item.sessao.id}/itens/" class="form-remover">
-                                    <input type="hidden" name="csrfmiddlewaretoken" value="${document.querySelector('[name=csrfmiddlewaretoken]').value}">
-                                    <input type="number" name="quantidade" min="1" max="${data.retirada.quantidade}" value="${data.retirada.quantidade}" required>
-                                    <button type="submit" title="Remover retirada">✖</button>
-                                </form>
-                            `;
-                            retiradaList.appendChild(newLi);
+                            const existingLi = retiradaList.querySelector(`[data-usuario="${data.retirada.usuario.nome.toLowerCase()}"]`);
+
+                            if (existingLi) {
+                                // Update existing retirada
+                                const badge = existingLi.querySelector('.badge-quantidade');
+                                badge.textContent = data.retirada.quantidade;
+                                const form = existingLi.querySelector('.form-remover');
+                                const input = form.querySelector('input[name="quantidade"]');
+                                input.max = data.retirada.quantidade;
+                                input.value = data.retirada.quantidade;
+                                form.action = `/usuarios/retirada/${data.retirada.id}/remover/?next=/sessoes/${data.retirada.item.sessao.id}/itens/`;
+                            } else {
+                                // Add new retirada to the list
+                                const newLi = document.createElement('li');
+                                newLi.className = 'retirada-item';
+                                newLi.setAttribute('data-usuario', data.retirada.usuario.nome.toLowerCase());
+                                newLi.innerHTML = `
+                                    <div class="retirada-info">
+                                        <strong>${data.retirada.usuario.nome}</strong>
+                                        <span class="badge-quantidade">${data.retirada.quantidade}</span>
+                                        <small>em ${new Date().toLocaleDateString('pt-BR')} ${new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}</small>
+                                    </div>
+                                    <form method="post" action="/usuarios/retirada/${data.retirada.id}/remover/?next=/sessoes/${data.retirada.item.sessao.id}/itens/" class="form-remover">
+                                        <input type="hidden" name="csrfmiddlewaretoken" value="${document.querySelector('[name=csrfmiddlewaretoken]').value}">
+                                        <input type="number" name="quantidade" min="1" max="${data.retirada.quantidade}" value="${data.retirada.quantidade}" required>
+                                        <button type="submit" title="Remover retirada">✖</button>
+                                    </form>
+                                `;
+                                retiradaList.appendChild(newLi);
+                            }
 
                             // Trigger PDF download
                             const link = document.createElement('a');

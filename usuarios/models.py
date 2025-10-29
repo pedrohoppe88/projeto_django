@@ -17,7 +17,7 @@ class Usuario(models.Model):
 
     nome = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
-    senha = models.CharField(max_length=128)  # Em produção use hashing!
+    senha = models.CharField(max_length=128)  
     graduacao = models.CharField(max_length=20, choices=GRADUACAO_CHOICES)
     is_admin = models.BooleanField(default=False)  # Permissão para acessar painel admin
 
@@ -27,7 +27,7 @@ class Usuario(models.Model):
 
 class Sessao(models.Model):
     nome = models.CharField(max_length=100, unique=True)
-    senha = models.CharField(max_length=100)  # pode ser armazenada criptografada
+    senha = models.CharField(max_length=100) 
     criador = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name="sessoes")
     criada_em = models.DateTimeField(auto_now_add=True)
 
