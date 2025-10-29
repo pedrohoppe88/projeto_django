@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cautela de Retirada de Material</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+        
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            font-size: 12pt;
+            line-height: 1.4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #fff;
+        }
+        
+        .container {
+            max-width: 210mm; /* Largura A4 */
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #2c3e50;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 18pt;
+            font-weight: 700;
+            color: #2c3e50;
+            margin: 0 0 10px 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .header p {
+            font-size: 11pt;
+            color: #7f8c8d;
+            margin: 5px 0;
+            font-weight: 300;
+        }
+        
+        .details {
+            margin-bottom: 40px;
+        }
+        
+        .details h2 {
+            font-size: 14pt;
+            font-weight: 700;
+            color: #2c3e50;
+            margin: 0 0 15px 0;
+            border-left: 4px solid #3498db;
+            padding-left: 10px;
+        }
+        
+        .details table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .details th {
+            background-color: #3498db;
+            color: #fff;
+            font-weight: 700;
+            padding: 12px 10px;
+            text-align: left;
+            border: 1px solid #2980b9;
+        }
+        
+        .details td {
+            padding: 12px 10px;
+            border: 1px solid #bdc3c7;
+            background-color: #f8f9fa;
+        }
+        
+        .details tr:nth-child(even) td {
+            background-color: #fff;
+        }
+        
+        .signature {
+            margin-top: 60px;
+            text-align: center;
+            border-top: 2px solid #bdc3c7;
+            padding-top: 30px;
+        }
+        
+        .signature p {
+            margin: 0 0 10px 0;
+            font-size: 11pt;
+            color: #555;
+        }
+        
+        .signature .declaration {
+            font-style: italic;
+            font-size: 12pt;
+            margin-bottom: 40px;
+            color: #2c3e50;
+        }
+        
+        .signature-line {
+            border-top: 1px solid #000;
+            width: 250px;
+            margin: 0 auto 10px auto;
+            padding-top: 5px;
+        }
+        
+        @media print {
+            body { margin: 0; }
+            .container { padding: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Cautela de Retirada de Material</h1>
+            <p><strong>Data da Retirada:</strong> {{ retirada.data_retirada|date:"d/m/Y H:i" }}</p>
+            <p><strong>Nº do Documento:</strong> {{ retirada.id }}</p>
+        </div>
+
+        <div class="details">
+            <h2>Dados da Retirada</h2>
+            <table>
+                <tr>
+                    <th>Usuário Responsável</th>
+                    <td>{{ retirada.usuario.get_graduacao_display }} - {{ retirada.usuario.nome }} ({{ retirada.usuario.matricula|default:"N/A" }})</td>
+                </tr>
+                <tr>
+                    <th>Quem Retirou</th>
+                    <td>{{ retirada.usuario.nome }} ({{ retirada.usuario.get_graduacao_display }})</td>
+                </tr>
+                <tr>
+                    <th>Entregador</th>
+                    <td>{{ retirada.entregador|default:"_______________________________ (Preencher manualmente)" }}</td>
+                </tr>
+                <tr>
+                    <th>Item Retirado</th>
+                    <td>{{ retirada.item.nome }} (Código: {{ retirada.item.codigo|default:"N/A" }})</td>
+                </tr>
+                <tr>
+                    <th>Sessão/Armazenamento</th>
+                    <td>{{ retirada.item.sessao.nome }}</td>
+                </tr>
+                <tr>
+                    <th>Quantidade Retirada</th>
+                    <td>{{ retirada.quantidade }} unidade(s)</td>
+                </tr>
+                <tr>
+                    <th>Observações</th>
+                    <td>{{ retirada.observacoes|default:"Nenhuma" }}</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="signature">
+            <p class="declaration">Declaro que recebi o(s) item(s) acima descrito(s) em bom estado e me comprometo a devolvê-lo(s) no prazo estipulado.</p>
+            <br><br><br>
+            <div class="signature-line"></div>
+            <p>Assinatura do Responsável pela Retirada (Quem Retirou)</p>
+            <p>{{ retirada.usuario.nome }}</p>
+            <p>Data: ____/____/____</p>
+            <br><br>
+            <div class="signature-line"></div>
+            <p>Assinatura do Entregador</p>
+            <p>{{ retirada.entregador|default:"_______________________________" }}</p>
+            <p>Data: ____/____/____</p>
+        </div>
+    </div>
+</body>
+</html>

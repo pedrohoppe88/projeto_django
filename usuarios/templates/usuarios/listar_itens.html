@@ -8,6 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="{% static 'style/listar_itens.css' %}">
+    <meta name="csrf-token" content="{{ csrf_token }}">
 </head>
 <body>
 
@@ -79,13 +80,13 @@
                     </ul>
 
 
-                    <form method="post" action="{% url 'retirar_item' item.id %}" class="form-retirar">
+                    <form method="post" action="{% url 'retirar_item' item.id %}" class="form-retirar" data-item-id="{{ item.id }}">
                         {% csrf_token %}
                         <label for="usuario-{{ item.id }}">Quem pegou:</label>
                         <input type="text" id="usuario-{{ item.id }}" name="usuario" list="usuarios-{{ item.id }}" placeholder="🔍 Pesquisar usuário..." required autocomplete="off" class="card-search" />
                         <datalist id="usuarios-{{ item.id }}">
                             {% for usuario in usuarios %}
-                            <option value="{{ usuario.id }}">{{ usuario.nome }} - {{ usuario.get_graduacao_display }}</option>
+                            <option value="{{ usuario.id }} - {{ usuario.nome }} - {{ usuario.get_graduacao_display }}"></option>
                             {% endfor %}
                         </datalist>
 
@@ -171,6 +172,118 @@
             const cards = document.querySelectorAll('.card-item');
             cards.forEach((card, index) => {
                 card.style.animationDelay = `${index * 0.1}s`;
+            });
+
+            // Handle AJAX for remover retirada
+            document.addEventListener('submit', function(e) {
+                if (e.target.classList.contains('form-remover')) {
+                    e.preventDefault();
+                    const form = e.target;
+                    const formData = new FormData(form);
+                    const retiradaId = form.action.split('/').slice(-2)[0]; // Extract retirada_id from URL
+
+                    fetch(form.action, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Update item quantity
+                            const itemCard = form.closest('.card-item');
+                            const quantityElement = itemCard.querySelector('.card-quantity');
+                            quantityElement.textContent = `${data.new_quantity} unidades cadastradas`;
+
+                            // Update retirada quantity or remove if deleted
+                            if (data.retirada_deleted) {
+                                form.closest('.retirada-item').remove();
+                            } else {
+                                const badge = form.previousElementSibling;
+                                badge.textContent = data.new_retirada_quantity;
+                                const input = form.querySelector('input[name="quantidade"]');
+                                input.max = data.new_retirada_quantity;
+                                input.value = data.new_retirada_quantity;
+                            }
+
+                            // Trigger PDF download
+                            const link = document.createElement('a');
+                            link.href = 'data:application/pdf;base64,' + data.pdf;
+                            link.download = data.filename;
+                            link.click();
+                        } else {
+                            alert(data.error);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Erro ao processar a solicitação.');
+                    });
+                }
+            });
+
+            // Handle AJAX for retirar item
+            document.addEventListener('submit', function(e) {
+                if (e.target.classList.contains('form-retirar')) {
+                    e.preventDefault();
+                    const form = e.target;
+                    const formData = new FormData(form);
+
+                    fetch(form.action, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Update item quantity
+                            const itemCard = form.closest('.card-item');
+                            const quantityElement = itemCard.querySelector('.card-quantity');
+                            quantityElement.textContent = `${data.new_quantity} unidades cadastradas`;
+
+                            // Add new retirada to the list
+                            const retiradaList = itemCard.querySelector('.retirada-list');
+                            const newLi = document.createElement('li');
+                            newLi.className = 'retirada-item';
+                            newLi.setAttribute('data-usuario', data.retirada.usuario.nome.toLowerCase());
+                            newLi.innerHTML = `
+                                <div class="retirada-info">
+                                    <strong>${data.retirada.usuario.nome}</strong>
+                                    <span class="badge-quantidade">${data.retirada.quantidade}</span>
+                                    <small>em ${new Date().toLocaleDateString('pt-BR')} ${new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}</small>
+                                </div>
+                                <form method="post" action="/usuarios/retirada/${data.retirada.id}/remover/?next=/sessoes/${data.retirada.item.sessao.id}/itens/" class="form-remover">
+                                    <input type="hidden" name="csrfmiddlewaretoken" value="${document.querySelector('[name=csrfmiddlewaretoken]').value}">
+                                    <input type="number" name="quantidade" min="1" max="${data.retirada.quantidade}" value="${data.retirada.quantidade}" required>
+                                    <button type="submit" title="Remover retirada">✖</button>
+                                </form>
+                            `;
+                            retiradaList.appendChild(newLi);
+
+                            // Trigger PDF download
+                            const link = document.createElement('a');
+                            link.href = 'data:application/pdf;base64,' + data.pdf;
+                            link.download = data.filename;
+                            link.click();
+
+                            // Reset form
+                            form.reset();
+                        } else {
+                            alert(data.error);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Erro ao processar a solicitação.');
+                    });
+                }
             });
         });
     </script>

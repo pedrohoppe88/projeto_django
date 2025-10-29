@@ -1,0 +1,7 @@
+- [x] Criar template usuarios/templates/usuarios/cautela_retirada.html
+- [x] Atualizar view retirar_item para gerar PDF após salvar Retirada
+- [ ] Implementar AJAX para retirada de itens com atualização em tempo real da quantidade (reverted)
+- [x] Atualizar view remover_retirada para gerar PDF após processar devolução
+- [ ] Implementar AJAX para devolução de itens com atualização em tempo real da quantidade (reverted)
+- [ ] Testar geração do PDF na retirada
+- [ ] Testar geração do PDF na devolução
