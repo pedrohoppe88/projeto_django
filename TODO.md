@@ -3,5 +3,9 @@
 - [ ] Implementar AJAX para retirada de itens com atualização em tempo real da quantidade (reverted)
 - [x] Atualizar view remover_retirada para gerar PDF após processar devolução
 - [ ] Implementar AJAX para devolução de itens com atualização em tempo real da quantidade (reverted)
+- [x] Criar view confirmar_devolucao para processar devoluções com autenticação
+- [x] Adicionar URL para confirmar_devolucao
+- [x] Atualizar template listar_itens.html para incluir modal de confirmação de devolução
+- [x] Atualizar JavaScript para lidar com devoluções via AJAX
 - [ ] Testar geração do PDF na retirada
 - [ ] Testar geração do PDF na devolução

@@ -71,7 +71,7 @@
                             <form method="post" action="{% url 'remover_retirada' retirada.id %}?next={% url 'listar_itens' sessao.id %}" class="form-remover">
                                 {% csrf_token %}
                                 <input type="number" name="quantidade" min="1" max="{{ retirada.quantidade }}" value="{{ retirada.quantidade }}" required />
-                                <button type="submit" title="Remover retirada">✖</button>
+                                <button type="submit" title="Devolver retirada" onclick="showDevolucaoModal(event, {{ retirada.id }}, '{{ retirada.usuario.nome }}', {{ retirada.quantidade }})">✖</button>
                             </form>
                         </li>
                         {% empty %}
@@ -86,14 +86,14 @@
                         <input type="text" id="usuario-{{ item.id }}" name="usuario" list="usuarios-{{ item.id }}" placeholder="🔍 Pesquisar usuário..." required autocomplete="off" class="card-search" />
                         <datalist id="usuarios-{{ item.id }}">
                             {% for usuario in usuarios %}
-                            <option value="{{ usuario.id }} - {{ usuario.nome }} - {{ usuario.get_graduacao_display }}"></option>
+                            <option value="{{ usuario.id }} - {{ usuario.nome }} - {{ usuario.get_graduacao_display }} - {{ usuario.email }}"></option>
                             {% endfor %}
                         </datalist>
 
                         <label for="quantidade-{{ item.id }}">Quantidade:</label>
                         <input id="quantidade-{{ item.id }}" type="number" name="quantidade" min="1" max="{{ item.quantidade }}" value="1" required />
 
-                        <button type="submit">Registrar Retirada</button>
+                        <button type="submit" class="btn-retirar">Registrar Retirada</button>
                     </form>
                 </div>
             </article>
@@ -118,13 +118,76 @@
                     <div class="modal-body">
                         <label for="nomeItem">Nome do Item</label>
                         <input type="text" id="nomeItem" name="nome" required />
-                        
+
                         <label for="quantidadeItem">Quantidade</label>
                         <input type="number" id="quantidadeItem" name="quantidade" min="1" required />
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                         <button type="submit" class="btn btn-primary">Salvar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Confirmar Retirada -->
+    <div class="modal fade" id="modalConfirmarRetirada" tabindex="-1" aria-labelledby="modalConfirmarRetiradaLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="formConfirmarRetirada">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <h5 class="modal-title">Confirmar Retirada</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Digite o email e senha do usuário <strong id="usuarioNome"></strong> que está pegando o item:</p>
+
+                        <label for="confirmEmail">E-mail</label>
+                        <input type="email" id="confirmEmail" name="email" required />
+
+                        <label for="confirmSenha">Senha</label>
+                        <input type="password" id="confirmSenha" name="senha" required />
+
+                        <input type="hidden" id="confirmUsuarioId" name="usuario_id" />
+                        <input type="hidden" id="confirmItemId" name="item_id" />
+                        <input type="hidden" id="confirmQuantidade" name="quantidade" />
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Confirmar Retirada</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Confirmar Devolução -->
+    <div class="modal fade" id="modalConfirmarDevolucao" tabindex="-1" aria-labelledby="modalConfirmarDevolucaoLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="formConfirmarDevolucao">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <h5 class="modal-title">Confirmar Devolução</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Digite o email e senha do usuário <strong id="usuarioNomeDevolucao"></strong> que está devolvendo o item:</p>
+
+                        <label for="confirmEmailDevolucao">E-mail</label>
+                        <input type="email" id="confirmEmailDevolucao" name="email" required />
+
+                        <label for="confirmSenhaDevolucao">Senha</label>
+                        <input type="password" id="confirmSenhaDevolucao" name="senha" required />
+
+                        <input type="hidden" id="confirmRetiradaId" name="retirada_id" />
+                        <input type="hidden" id="confirmQuantidadeDevolucao" name="quantidade" />
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Confirmar Devolução</button>
                     </div>
                 </form>
             </div>
@@ -225,79 +288,178 @@
                 }
             });
 
-            // Handle AJAX for retirar item
+            // Handle form submission for retirar item - Show confirmation modal
             document.addEventListener('submit', function(e) {
                 if (e.target.classList.contains('form-retirar')) {
                     e.preventDefault();
                     const form = e.target;
-                    const formData = new FormData(form);
 
-                    fetch(form.action, {
-                        method: 'POST',
-                        body: formData,
-                        headers: {
-                            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
-                            'X-Requested-With': 'XMLHttpRequest'
-                        }
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            // Update item quantity
-                            const itemCard = form.closest('.card-item');
-                            const quantityElement = itemCard.querySelector('.card-quantity');
-                            quantityElement.textContent = `${data.new_quantity} unidades cadastradas`;
+                    // Parse user input
+                    const usuarioValue = form.querySelector('input[name="usuario"]').value;
+                    const usuarioId = usuarioValue.split(' - ')[0];
+                    const usuarioNome = usuarioValue.split(' - ')[1];
+                    const usuarioEmail = usuarioValue.split(' - ')[3];
+                    const quantidade = form.querySelector('input[name="quantidade"]').value;
+                    const itemId = form.getAttribute('data-item-id');
 
-                            // Check if retirada for this user already exists
-                            const retiradaList = itemCard.querySelector('.retirada-list');
-                            const existingLi = retiradaList.querySelector(`[data-usuario="${data.retirada.usuario.nome.toLowerCase()}"]`);
+                    // Populate confirmation modal
+                    document.getElementById('usuarioNome').textContent = usuarioNome;
+                    document.getElementById('confirmEmail').value = usuarioEmail;
+                    document.getElementById('confirmUsuarioId').value = usuarioId;
+                    document.getElementById('confirmItemId').value = itemId;
+                    document.getElementById('confirmQuantidade').value = quantidade;
 
-                            if (existingLi) {
-                                // Update existing retirada
-                                const badge = existingLi.querySelector('.badge-quantidade');
-                                badge.textContent = data.retirada.quantidade;
-                                const form = existingLi.querySelector('.form-remover');
-                                const input = form.querySelector('input[name="quantidade"]');
-                                input.max = data.retirada.quantidade;
-                                input.value = data.retirada.quantidade;
-                                form.action = `/usuarios/retirada/${data.retirada.id}/remover/?next=/sessoes/${data.retirada.item.sessao.id}/itens/`;
-                            } else {
-                                // Add new retirada to the list
-                                const newLi = document.createElement('li');
-                                newLi.className = 'retirada-item';
-                                newLi.setAttribute('data-usuario', data.retirada.usuario.nome.toLowerCase());
-                                newLi.innerHTML = `
-                                    <div class="retirada-info">
-                                        <strong>${data.retirada.usuario.nome}</strong>
-                                        <span class="badge-quantidade">${data.retirada.quantidade}</span>
-                                        <small>em ${new Date().toLocaleDateString('pt-BR')} ${new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}</small>
-                                    </div>
-                                    <form method="post" action="/usuarios/retirada/${data.retirada.id}/remover/?next=/sessoes/${data.retirada.item.sessao.id}/itens/" class="form-remover">
-                                        <input type="hidden" name="csrfmiddlewaretoken" value="${document.querySelector('[name=csrfmiddlewaretoken]').value}">
-                                        <input type="number" name="quantidade" min="1" max="${data.retirada.quantidade}" value="${data.retirada.quantidade}" required>
-                                        <button type="submit" title="Remover retirada">✖</button>
-                                    </form>
-                                `;
-                                retiradaList.appendChild(newLi);
-                            }
-
-                            // Trigger PDF download
-                            const link = document.createElement('a');
-                            link.href = 'data:application/pdf;base64,' + data.pdf;
-                            link.download = data.filename;
-                            link.click();
-
-                            // Reset form
-                            form.reset();
-                        } else {
-                            alert(data.error);
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert('Erro ao processar a solicitação.');
-                    });
+                    // Show modal
+                    const modal = new bootstrap.Modal(document.getElementById('modalConfirmarRetirada'));
+                    modal.show();
                 }
+            });
+
+            // Handle confirmation modal submission
+            document.getElementById('formConfirmarRetirada').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const form = e.target;
+                const formData = new FormData(form);
+
+                fetch('/usuarios/confirmar_retirada/', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Close modal
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('modalConfirmarRetirada'));
+                        modal.hide();
+
+                        // Update item quantity
+                        const itemId = form.querySelector('#confirmItemId').value;
+                        const itemCard = document.querySelector(`form[data-item-id="${itemId}"]`).closest('.card-item');
+                        const quantityElement = itemCard.querySelector('.card-quantity');
+                        quantityElement.textContent = `${data.new_quantity} unidades cadastradas`;
+
+                        // Check if retirada for this user already exists
+                        const retiradaList = itemCard.querySelector('.retirada-list');
+                        const existingLi = retiradaList.querySelector(`[data-usuario="${data.retirada.usuario.nome.toLowerCase()}"]`);
+
+                        if (existingLi) {
+                            // Update existing retirada
+                            const badge = existingLi.querySelector('.badge-quantidade');
+                            badge.textContent = data.retirada.quantidade;
+                            const form = existingLi.querySelector('.form-remover');
+                            const input = form.querySelector('input[name="quantidade"]');
+                            input.max = data.retirada.quantidade;
+                            input.value = data.retirada.quantidade;
+                            form.action = `/usuarios/retirada/${data.retirada.id}/remover/?next=/sessoes/${data.retirada.item.sessao.id}/itens/`;
+                        } else {
+                            // Add new retirada to the list
+                            const newLi = document.createElement('li');
+                            newLi.className = 'retirada-item';
+                            newLi.setAttribute('data-usuario', data.retirada.usuario.nome.toLowerCase());
+                            newLi.innerHTML = `
+                                <div class="retirada-info">
+                                    <strong>${data.retirada.usuario.nome}</strong>
+                                    <span class="badge-quantidade">${data.retirada.quantidade}</span>
+                                    <small>em ${new Date().toLocaleDateString('pt-BR')} ${new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}</small>
+                                </div>
+                                <form method="post" action="/usuarios/retirada/${data.retirada.id}/remover/?next=/sessoes/${data.retirada.item.sessao.id}/itens/" class="form-remover">
+                                    <input type="hidden" name="csrfmiddlewaretoken" value="${document.querySelector('[name=csrfmiddlewaretoken]').value}">
+                                    <input type="number" name="quantidade" min="1" max="${data.retirada.quantidade}" value="${data.retirada.quantidade}" required>
+                                    <button type="submit" title="Devolver retirada" onclick="showDevolucaoModal(event, ${data.retirada.id}, '${data.retirada.usuario.nome}', ${data.retirada.quantidade})">✖</button>
+                                </form>
+                            `;
+                            retiradaList.appendChild(newLi);
+                        }
+
+                        // Trigger PDF download
+                        const link = document.createElement('a');
+                        link.href = 'data:application/pdf;base64,' + data.pdf;
+                        link.download = data.filename;
+                        link.click();
+
+                        // Reset original form
+                        const originalForm = document.querySelector(`form[data-item-id="${itemId}"]`);
+                        originalForm.reset();
+
+                        // Reset confirmation form
+                        form.reset();
+                    } else {
+                        alert(data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Erro ao processar a solicitação.');
+                });
+            });
+
+            // Function to show devolucao modal
+            function showDevolucaoModal(event, retiradaId, usuarioNome, quantidade) {
+                event.preventDefault();
+                document.getElementById('usuarioNomeDevolucao').textContent = usuarioNome;
+                document.getElementById('confirmRetiradaId').value = retiradaId;
+                document.getElementById('confirmQuantidadeDevolucao').value = quantidade;
+                const modal = new bootstrap.Modal(document.getElementById('modalConfirmarDevolucao'));
+                modal.show();
+            }
+
+            // Handle devolucao modal submission
+            document.getElementById('formConfirmarDevolucao').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const form = e.target;
+                const formData = new FormData(form);
+
+                fetch('/usuarios/confirmar_devolucao/', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Close modal
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('modalConfirmarDevolucao'));
+                        modal.hide();
+
+                        // Update item quantity
+                        const retiradaId = form.querySelector('#confirmRetiradaId').value;
+                        const retiradaLi = document.querySelector(`form[action*="/retirada/${retiradaId}/remover/"]`).closest('.retirada-item');
+                        const itemCard = retiradaLi.closest('.card-item');
+                        const quantityElement = itemCard.querySelector('.card-quantity');
+                        quantityElement.textContent = `${data.new_quantity} unidades cadastradas`;
+
+                        // Update or remove retirada
+                        if (data.retirada_deleted) {
+                            retiradaLi.remove();
+                        } else {
+                            const badge = retiradaLi.querySelector('.badge-quantidade');
+                            badge.textContent = data.new_retirada_quantity;
+                            const input = retiradaLi.querySelector('input[name="quantidade"]');
+                            input.max = data.new_retirada_quantity;
+                            input.value = data.new_retirada_quantity;
+                        }
+
+                        // Trigger PDF download
+                        const link = document.createElement('a');
+                        link.href = 'data:application/pdf;base64,' + data.pdf;
+                        link.download = data.filename;
+                        link.click();
+
+                        // Reset form
+                        form.reset();
+                    } else {
+                        alert(data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Erro ao processar a solicitação.');
+                });
             });
         });
     </script>

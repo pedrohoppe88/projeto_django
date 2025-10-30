@@ -256,6 +256,76 @@ def validar_sessao(request, sessao_id):
 
     return JsonResponse({"success": False, "error": "Método inválido."}, status=400)
 
+def confirmar_retirada(request):
+    if request.method == "POST":
+        email = request.POST.get("email")
+        senha = request.POST.get("senha")
+        usuario_id = request.POST.get("usuario_id")
+        item_id = request.POST.get("item_id")
+        quantidade = int(request.POST.get("quantidade", 1))
+
+        try:
+            usuario = Usuario.objects.get(id=usuario_id, email=email)
+            if check_password(senha, usuario.senha):
+                # Credenciais válidas, processar retirada
+                item = get_object_or_404(Item, id=item_id)
+
+                if quantidade > item.quantidade:
+                    return JsonResponse({'success': False, 'error': 'Quantidade solicitada maior que disponível.'})
+
+                # Verifica se já existe retirada para o mesmo usuário + item
+                retirada_existente = Retirada.objects.filter(item=item, usuario=usuario).first()
+
+                if retirada_existente:
+                    retirada_existente.quantidade += quantidade
+                    retirada_existente.save()
+                    retirada = retirada_existente
+                else:
+                    retirada = Retirada.objects.create(
+                        item=item,
+                        usuario=usuario,
+                        quantidade=quantidade,
+                        data_retirada=timezone.now()
+                    )
+
+                # Atualiza estoque
+                item.quantidade -= quantidade
+                item.save()
+
+                # Gera PDF da cautela
+                template_path = 'usuarios/cautela_retirada.html'
+                context = {'retirada': retirada}
+
+                template = get_template(template_path)
+                html = template.render(context)
+
+                pdf_buffer = io.BytesIO()
+                pisa_status = pisa.CreatePDF(html, dest=pdf_buffer)
+                if pisa_status.err:
+                    return JsonResponse({'success': False, 'error': 'Erro ao gerar PDF da cautela'})
+
+                pdf_data = pdf_buffer.getvalue()
+                pdf_base64 = base64.b64encode(pdf_data).decode('utf-8')
+
+                return JsonResponse({
+                    'success': True,
+                    'pdf': pdf_base64,
+                    'filename': f"cautela_{retirada.usuario.nome}_{retirada.item.nome}_{retirada.data_retirada.strftime('%d%m%Y_%H%M')}.pdf",
+                    'new_quantity': item.quantidade,
+                    'retirada': {
+                        'id': retirada.id,
+                        'usuario': {'nome': retirada.usuario.nome},
+                        'quantidade': retirada.quantidade,
+                        'item': {'sessao': {'id': retirada.item.sessao.id}}
+                    }
+                })
+            else:
+                return JsonResponse({'success': False, 'error': 'Senha incorreta.'})
+        except Usuario.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Usuário não encontrado.'})
+
+    return JsonResponse({'success': False, 'error': 'Método inválido.'})
+
 def retirar_item(request, item_id):
     item = get_object_or_404(Item, id=item_id)
 
@@ -327,6 +397,72 @@ def retirar_item(request, item_id):
         response['Content-Disposition'] = f'attachment; filename="cautela_{retirada.usuario.nome}_{retirada.item.nome}_{retirada.data_retirada.strftime('%d%m%Y_%H%M')}.pdf"'
         response.write(pdf_data)
         return response
+
+def confirmar_devolucao(request):
+    if request.method == "POST":
+        email = request.POST.get("email")
+        senha = request.POST.get("senha")
+        retirada_id = request.POST.get("retirada_id")
+        quantidade = int(request.POST.get("quantidade", 1))
+
+        try:
+            retirada = Retirada.objects.get(id=retirada_id)
+            usuario = retirada.usuario
+            if usuario.email == email and check_password(senha, usuario.senha):
+                # Credenciais válidas, processar devolução
+                item = retirada.item
+
+                if quantidade > retirada.quantidade:
+                    return JsonResponse({'success': False, 'error': 'Quantidade solicitada maior que retirada.'})
+
+                retirada_deleted = False
+                if quantidade >= retirada.quantidade:
+                    item.quantidade += retirada.quantidade
+                    item.save()
+                    retirada.delete()
+                    quantidade_devolvida = retirada.quantidade
+                    retirada_deleted = True
+                else:
+                    # Remove apenas parte da retirada
+                    item.quantidade += quantidade
+                    item.save()
+                    retirada.quantidade -= quantidade
+                    retirada.save()
+                    quantidade_devolvida = quantidade
+
+                # Gera PDF da devolução
+                template_path = 'usuarios/cautela_devolucao.html'
+                context = {
+                    'retirada': retirada if not retirada_deleted else None,  # If fully deleted, pass None or adjust template
+                    'quantidade_devolvida': quantidade_devolvida,
+                    'data_devolucao': timezone.now()
+                }
+
+                template = get_template(template_path)
+                html = template.render(context)
+
+                pdf_buffer = io.BytesIO()
+                pisa_status = pisa.CreatePDF(html, dest=pdf_buffer)
+                if pisa_status.err:
+                    return JsonResponse({'success': False, 'error': 'Erro ao gerar PDF da devolução'})
+
+                pdf_data = pdf_buffer.getvalue()
+                pdf_base64 = base64.b64encode(pdf_data).decode('utf-8')
+
+                return JsonResponse({
+                    'success': True,
+                    'pdf': pdf_base64,
+                    'filename': f"devolucao_{retirada.usuario.nome}_{retirada.item.nome}_{timezone.now().strftime('%d%m%Y_%H%M')}.pdf",
+                    'new_quantity': item.quantidade,
+                    'retirada_deleted': retirada_deleted,
+                    'new_retirada_quantity': retirada.quantidade if not retirada_deleted else 0
+                })
+            else:
+                return JsonResponse({'success': False, 'error': 'Email ou senha incorretos.'})
+        except Retirada.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Retirada não encontrada.'})
+
+    return JsonResponse({'success': False, 'error': 'Método inválido.'})
 
 def remover_retirada(request, retirada_id):
     try:
